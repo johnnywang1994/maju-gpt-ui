@@ -3,7 +3,7 @@ import { FC, useRef, useEffect } from "react";
 import { message } from "antd";
 import BackTop from "antd/es/float-button/BackTop";
 import useLiff from "@/hooks/useLiff";
-import useCommon from "@/hooks/useCommon";
+import useCommon, { localSettingKey } from "@/hooks/useCommon";
 import useMessages from "@/hooks/useMessages";
 import { sendUserCompletions } from "./MessageContainer/api";
 import MessageContainer from "./MessageContainer";
@@ -13,7 +13,7 @@ import { MAX_MESSAGES } from "@/lib/env";
 const MessageBoard: FC = () => {
   const ref = useRef(null);
   const { messages } = useMessages();
-  const { settings, computed } = useCommon();
+  const { settings, computed, setSettings } = useCommon();
   const { accessToken } = useLiff();
 
   const handleMessages = (newMessage: SendMessage) => {
@@ -76,6 +76,15 @@ const MessageBoard: FC = () => {
       behavior: "smooth",
     });
   }, [messages]);
+
+  useEffect(() => {
+    const prevSettings = localStorage.getItem(localSettingKey);
+    if (!!prevSettings) {
+      try {
+        setSettings(JSON.parse(prevSettings));
+      } catch {}
+    }
+  }, []);
 
   return (
     <div ref={ref} className="h-full overflow-auto">

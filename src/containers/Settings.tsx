@@ -11,7 +11,7 @@ import {
 } from "antd";
 import { Icon } from "@iconify/react";
 
-import useCommon, { localSettingKey } from "@/hooks/useCommon";
+import useCommon from "@/hooks/useCommon";
 import { MAX_TOKENS } from "@/lib/env";
 
 interface Props extends PropsWithChildren {}
@@ -98,6 +98,9 @@ const Settings: FC<Props> = () => {
   );
 
   const handleSubmit = (values: Record<FieldNames, any>) => {
+    values.maxTokens = Number(values.maxTokens);
+    values.frequencyPenalty = Number(values.frequencyPenalty);
+    values.presencePenalty = Number(values.presencePenalty);
     setSettings(values);
     toggleSetting(false);
     message.success("New settings applied");
@@ -111,15 +114,6 @@ const Settings: FC<Props> = () => {
       form.setFieldValue(FieldNames.FrequencyPenalty, 0);
     }
   }, [watchMaxTokens, watchFrequencyPenalty]);
-
-  useEffect(() => {
-    const prevSettings = localStorage.getItem(localSettingKey);
-    if (!!prevSettings) {
-      try {
-        setSettings(JSON.parse(prevSettings));
-      } catch {}
-    }
-  }, []);
 
   return (
     <div className="text-white">
