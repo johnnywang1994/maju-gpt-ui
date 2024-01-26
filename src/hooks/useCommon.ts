@@ -27,6 +27,8 @@ interface StoreUtil {
   setSettings: (newSettings: Partial<Settings>) => void;
 }
 
+export const localSettingKey = "maju-gpt_settings";
+
 const useCommon = create<StoreUtil>((set, get) => ({
   openDrawer: false,
   openSetting: false,
@@ -75,6 +77,7 @@ const useCommon = create<StoreUtil>((set, get) => ({
     set({
       settings: { ...settings, ...newSettings },
     });
+    localStorage.setItem(localSettingKey, JSON.stringify(newSettings));
   },
 }));
 
