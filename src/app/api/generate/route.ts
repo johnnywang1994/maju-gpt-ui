@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     } = body;
     if (enableAuth) {
       if (!token) return failed(400);
-      const isValid = checkAccessToken(token);
+      const isValid = await checkAccessToken(token);
       if (!isValid) return failed(403);
     }
     const result = await sendUserCompletions({
