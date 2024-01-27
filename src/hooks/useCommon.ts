@@ -22,6 +22,10 @@ interface StoreUtil {
   computed: {
     systemPrompt: string;
   };
+  openApiKeyModal: boolean;
+  apiKey?: string;
+  setApiKeyModal: (bool: boolean) => void;
+  setApiKey: (key: string) => void;
   toggleDrawer: (bool?: boolean) => void;
   toggleSetting: (bool?: boolean) => void;
   setSettings: (newSettings: Partial<Settings>) => void;
@@ -57,6 +61,11 @@ const useCommon = create<StoreUtil>((set, get) => ({
       return `I want you to act as a professional ${role}.You are good at ${goodAt}.User will provide some topics or questions related to ${topics}, and it will be your job to explain them in easy-to-understand terms.This could include providing step-by-step instructions for solving a problem, demonstrating various techniques with visuals or suggesting online resources for further study.`;
     },
   },
+  // for static mode
+  openApiKeyModal: false,
+  apiKey: undefined,
+  setApiKeyModal: (bool: boolean) => set({ openApiKeyModal: bool }),
+  setApiKey: (key: string) => set({ apiKey: key }),
 
   toggleDrawer: (bool?: boolean) => {
     const { openDrawer } = get();
@@ -72,9 +81,15 @@ const useCommon = create<StoreUtil>((set, get) => ({
     });
   },
 
-  setSettings: (newSettings: Partial<Settings>) => {
+  setSettings: (newSettings: Partial<Settings> & { apiKey?: string }) => {
     const { settings } = get();
+    let apiKey;
+    if (newSettings.apiKey) {
+      apiKey = newSettings.apiKey;
+      delete newSettings["apiKey"];
+    }
     set({
+      apiKey: apiKey || undefined,
       settings: { ...settings, ...newSettings },
     });
     localStorage.setItem(localSettingKey, JSON.stringify(newSettings));

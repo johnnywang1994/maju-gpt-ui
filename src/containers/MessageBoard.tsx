@@ -8,12 +8,14 @@ import useMessages from "@/hooks/useMessages";
 import { sendUserCompletions } from "./MessageContainer/api";
 import MessageContainer from "./MessageContainer";
 import { RoleType, SendMessage } from "@/types/message";
-import { MAX_MESSAGES } from "@/lib/env";
+import { MAX_MESSAGES, MODE } from "@/lib/env";
+
+const isStatic = MODE === "static";
 
 const MessageBoard: FC = () => {
   const ref = useRef(null);
   const { messages } = useMessages();
-  const { settings, computed, setSettings } = useCommon();
+  const { settings, computed, apiKey, setSettings } = useCommon();
   const { accessToken } = useLiff();
 
   const handleMessages = (newMessage: SendMessage) => {
@@ -52,18 +54,28 @@ const MessageBoard: FC = () => {
   };
 
   const handleSendRequest = async (newMessage: SendMessage) => {
+    if (isStatic && !apiKey) {
+      message.error(
+        "Please enter your API key in settings before sending question."
+      );
+      return;
+    }
     try {
-      const res = await sendUserCompletions({
-        messages: handleMessages(newMessage),
-        token: accessToken,
-        temperature: settings.temperature,
-        maxTokens: settings.maxTokens,
-        model: settings.model,
-        frequencyPenalty: settings.frequencyPenalty,
-        presencePenalty: settings.presencePenalty,
-      });
-      if (res?.data) return res.data;
-      handleError(res.status);
+      const res = await sendUserCompletions(
+        {
+          messages: handleMessages(newMessage),
+          token: accessToken,
+          temperature: settings.temperature,
+          maxTokens: settings.maxTokens,
+          model: settings.model,
+          frequencyPenalty: settings.frequencyPenalty,
+          presencePenalty: settings.presencePenalty,
+        },
+        apiKey
+      );
+      if (res?.data) return res.data; // host message
+      if (res?.id) return res; // raw api message
+      handleError(res?.status);
     } catch (err) {
       console.warn(err);
       message.error("Server error, please contact project owner.");
@@ -84,7 +96,7 @@ const MessageBoard: FC = () => {
         setSettings(JSON.parse(prevSettings));
       } catch {}
     }
-  }, []);
+  }, [setSettings]);
 
   return (
     <div ref={ref} className="h-full overflow-auto">

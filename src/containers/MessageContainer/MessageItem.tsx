@@ -32,7 +32,7 @@ const MessageItem: FC<Props> = ({ names, message, onDelete }) => {
           <Icon icon={isGPT ? "mdi:face-agent" : "mdi:account"} width={26} />
         </div>
       </div>
-      <div className="pl-10">
+      <div className="pl-10 dark:text-gray-100">
         <h4>{isGPT ? names.assistant : names.user}</h4>
         <div>
           <Markdown content={content} />
@@ -41,7 +41,7 @@ const MessageItem: FC<Props> = ({ names, message, onDelete }) => {
         <div className="absolute right-0 top-0">
           <Space>
             {isGPT && (
-              <div className="w-7 h-7 rounded-md inline-flex items-center justify-center bg-gray-300 hover:bg-gray-600 cursor-pointer">
+              <div className="w-7 h-7 rounded-md inline-flex items-center justify-center bg-gray-400 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-500 cursor-pointer">
                 <CopyButton text={content} />
               </div>
             )}
@@ -49,7 +49,7 @@ const MessageItem: FC<Props> = ({ names, message, onDelete }) => {
               title="Are you sure to delete this message?"
               onConfirm={onDelete}
             >
-              <div className="w-7 h-7 rounded-md inline-flex items-center justify-center text-white bg-gray-300 hover:bg-gray-600 cursor-pointer">
+              <div className="w-7 h-7 rounded-md inline-flex items-center justify-center text-white bg-gray-400 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-500 cursor-pointer">
                 <Icon width={20} icon="mdi:trash-can-outline" />
               </div>
             </Popconfirm>

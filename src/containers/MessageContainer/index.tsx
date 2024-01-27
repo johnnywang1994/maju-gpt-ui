@@ -55,7 +55,7 @@ const MessageContainer: FC<Props> = ({
 
   useEffect(() => {
     initialize();
-  }, []);
+  }, [initialize]);
 
   return (
     <Spin spinning={!isInited}>
@@ -71,7 +71,7 @@ const MessageContainer: FC<Props> = ({
           ))}
           {messages.length === 0 && (
             <div className="h-[280px] sm:h-[400px] md:h-[600px] flex justify-center items-center select-none">
-              <div className="text-center text-gray-500">
+              <div className="text-center text-gray-500 dark:text-gray-300">
                 <Icon width={36} icon="mdi:emoticon-cool-outline" />
                 <h2>How can I help you today?</h2>
               </div>

@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren, useEffect, useState } from "react";
-import { Input } from "antd";
+import Input from "antd/es/input";
 import useInput from "@/hooks/useInput";
 import SafeText from "./SafeText";
 
@@ -21,11 +21,11 @@ const EditableText: FC<Props> = ({ className, label, onClick, onConfirm }) => {
 
   useEffect(() => {
     setValue(label);
-  }, [label]);
+  }, [label, setValue]);
 
   return edit ? (
     <Input
-      className={className}
+      className={`${className} text-black bg-white dark:bg-white`}
       value={value}
       onChange={handleValue}
       onBlur={handleConfirm}

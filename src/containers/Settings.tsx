@@ -12,7 +12,9 @@ import {
 import { Icon } from "@iconify/react";
 
 import useCommon from "@/hooks/useCommon";
-import { MAX_TOKENS } from "@/lib/env";
+import { MAX_TOKENS, MODE } from "@/lib/env";
+
+const isStatic = MODE === "static";
 
 interface Props extends PropsWithChildren {}
 
@@ -28,6 +30,7 @@ export enum FieldNames {
   Role = "role",
   GoodAt = "goodAt",
   Topics = "topics",
+  ApiKey = "apiKey",
 }
 
 const temperatureOptions = [
@@ -113,7 +116,7 @@ const Settings: FC<Props> = () => {
     if (watchFrequencyPenalty < -2 || watchFrequencyPenalty > 2) {
       form.setFieldValue(FieldNames.FrequencyPenalty, 0);
     }
-  }, [watchMaxTokens, watchFrequencyPenalty]);
+  }, [form, watchMaxTokens, watchFrequencyPenalty]);
 
   return (
     <div className="text-white">
@@ -151,6 +154,12 @@ const Settings: FC<Props> = () => {
         </Form.Item>
 
         <h3 className="mb-4">API</h3>
+        {isStatic && (
+          <Form.Item name={FieldNames.ApiKey} label="API key">
+            <Input placeholder="Please enter your API key" autoComplete="off" />
+          </Form.Item>
+        )}
+
         <Form.Item name={FieldNames.Model} label="ChatGPT Model">
           <Select options={modelOptions} />
         </Form.Item>

@@ -10,7 +10,7 @@ interface Props extends PropsWithChildren {
   onClose?: () => void;
 }
 
-const Sidebar: FC<Props> = ({ onClose }) => {
+const MySidebar: FC<Props> = ({ onClose }) => {
   const {
     isInited,
     roomHistory,
@@ -40,15 +40,15 @@ const Sidebar: FC<Props> = ({ onClose }) => {
           New Chat
         </Button>
       </div>
-      <div className="text-white mt-6">
+      <div className="base-text mt-6">
         {roomHistory.map(({ label, key }) => (
           <div key={key} className="relative group">
             <EditableText
               className={clsx(
                 `px-4 py-2 pr-10 my-1 rounded-md cursor-pointer`,
                 key === currentRoom.key
-                  ? "bg-sky-500"
-                  : "group-hover:bg-gray-600"
+                  ? "bg-sky-200 dark:bg-sky-500"
+                  : "group-hover:bg-gray-200 dark:group-hover:bg-gray-600"
               )}
               label={label}
               onClick={() => {
@@ -61,7 +61,7 @@ const Sidebar: FC<Props> = ({ onClose }) => {
               title="Are you sure you want to delete this dialog?"
               onConfirm={() => deleteRoom({ label, key })}
             >
-              <div className="delete-icon absolute right-1 top-2 hidden group-hover:block cursor-pointer text-gray-300 hover:text-white">
+              <div className="delete-icon absolute right-1 top-2 hidden group-hover:block icon-text">
                 <Icon width={20} icon="mdi:delete-circle" />
               </div>
             </Popconfirm>
@@ -74,4 +74,4 @@ const Sidebar: FC<Props> = ({ onClose }) => {
   );
 };
 
-export default Sidebar;
+export default MySidebar;

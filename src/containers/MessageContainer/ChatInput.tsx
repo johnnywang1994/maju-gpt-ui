@@ -19,7 +19,6 @@ const ChatInput: FC<Props> = ({ loading, onSubmit }) => {
   return (
     <Space.Compact style={{ width: "100%" }}>
       <Input
-        className="bg-gray-100"
         placeholder="Send message to ChatGPT..."
         size="large"
         disabled={loading}

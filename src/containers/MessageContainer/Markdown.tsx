@@ -3,7 +3,7 @@
 import { FC, PropsWithChildren, ReactElement } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { a11yDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import a11yDark from "react-syntax-highlighter/dist/cjs/styles/prism/a11y-dark";
 import CopyButton from "./CopyButton";
 
 interface MarkdownProps {

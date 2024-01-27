@@ -17,3 +17,17 @@ h1, h2, h3, h4, h5, h6 {
 p {
   @apply my-2;
 }
+
+@layer components {
+  .base-text {
+    @apply text-gray-800 dark:text-white;
+  }
+
+  .block-border {
+    @apply border-solid border-gray-300 dark:border-gray-600;
+  }
+
+  .icon-text {
+    @apply text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white cursor-pointer;
+  }
+}
