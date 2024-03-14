@@ -1,4 +1,4 @@
-import { sendImageGenerate } from "@/server/openai";
+import { sendUserCompletions } from "@/server/openai";
 import { verifyAccessToken, channelId } from "@/server/line";
 import { success, failed } from "@/server/response";
 
@@ -15,18 +15,26 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const {
-      prompt,
-      model,
+      messages,
       token,
+      temperature,
+      maxTokens,
+      model,
+      frequencyPenalty,
+      presencePenalty,
     } = body;
     if (enableAuth) {
       if (!token) return failed(400);
       const isValid = await checkAccessToken(token);
       if (!isValid) return failed(403);
     }
-    const result = await sendImageGenerate({
-      prompt,
+    const result = await sendUserCompletions({
+      messages,
+      temperature,
+      maxTokens,
       model,
+      frequencyPenalty,
+      presencePenalty,
     });
     return success(result);
   } catch (err) {

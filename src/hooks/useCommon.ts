@@ -1,6 +1,11 @@
 import { create } from "zustand";
 import { MAX_TOKENS } from "@/lib/env";
 
+export enum PageTab {
+  Chat = 'chat',
+  Image = 'image',
+}
+
 interface Settings {
   username: string;
   gptname: string;
@@ -16,6 +21,7 @@ interface Settings {
 }
 
 interface StoreUtil {
+  pageTab: PageTab;
   openDrawer: boolean;
   openSetting: boolean;
   settings: Settings;
@@ -26,6 +32,7 @@ interface StoreUtil {
   apiKey?: string;
   setApiKeyModal: (bool: boolean) => void;
   setApiKey: (key: string) => void;
+  setPageTab: (tab: PageTab) => void;
   toggleDrawer: (bool?: boolean) => void;
   toggleSetting: (bool?: boolean) => void;
   setSettings: (newSettings: Partial<Settings>) => void;
@@ -34,6 +41,7 @@ interface StoreUtil {
 export const localSettingKey = "maju-gpt_settings";
 
 const useCommon = create<StoreUtil>((set, get) => ({
+  pageTab: PageTab.Chat,
   openDrawer: false,
   openSetting: false,
   settings: {
@@ -66,6 +74,7 @@ const useCommon = create<StoreUtil>((set, get) => ({
   apiKey: undefined,
   setApiKeyModal: (bool: boolean) => set({ openApiKeyModal: bool }),
   setApiKey: (key: string) => set({ apiKey: key }),
+  setPageTab: (tab: PageTab) => set({ pageTab: tab }),
 
   toggleDrawer: (bool?: boolean) => {
     const { openDrawer } = get();

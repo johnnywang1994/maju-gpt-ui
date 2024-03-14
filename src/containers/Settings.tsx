@@ -59,7 +59,7 @@ const temperatureOptions = [
 // https://platform.openai.com/docs/models/model-endpoint-compatibility
 const modelOptions = [
   {
-    label: "GPT 4 Turbo Preview(2023/04)",
+    label: "GPT 4 Turbo Preview(2023/12)",
     value: "gpt-4-turbo-preview",
   },
   {
@@ -70,6 +70,14 @@ const modelOptions = [
     label: "GPT 3.5 Turbo(2021/09)",
     value: "gpt-3.5-turbo",
   },
+  {
+    label: "DALL·E 3",
+    value: "dall-e-3",
+  },
+  {
+    label: "DALL·E 2",
+    value: "dall-e-2",
+  }
 ];
 
 const Settings: FC<Props> = () => {

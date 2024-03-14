@@ -3,7 +3,8 @@ import { FC, useState, useEffect } from "react";
 import { Spin, Skeleton, message } from "antd";
 import { Icon } from "@iconify/react";
 
-import useMessages, { parseMessage } from "@/hooks/useMessages";
+import useMessages, { parseChatMessage, parseImageMessage } from "@/hooks/useMessages";
+import { PageTab } from '@/hooks/useCommon';
 import ChatInput from "@/containers/MessageContainer/ChatInput";
 import MessageItem from "@/containers/MessageContainer/MessageItem";
 import { RoleType, RawGPTMessage, SendMessage } from "@/types/message";
@@ -42,9 +43,17 @@ const MessageContainer: FC<Props> = ({
     addMessage(newUserMessage);
     setLoading(true);
     try {
-      const res = await onSendRequest(newUserMessage);
-      if (res?.id) {
-        addMessage(parseMessage(res));
+      const res = (await onSendRequest(newUserMessage) as any);
+      if (res.tab === PageTab.Chat) {
+        // chat message
+        addMessage(parseChatMessage(res?.id ? res : res.data));
+      } else if (res.tab === PageTab.Image && res.data) {
+        // image generated message
+        addMessage(
+          parseImageMessage(
+            Array.isArray(res.data) ? res.data[0] : res.data.data[0]
+          )
+        );
       }
     } catch (err) {
       console.error(err);

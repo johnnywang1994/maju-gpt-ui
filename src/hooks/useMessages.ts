@@ -160,11 +160,20 @@ const useMessages = create<StoreUtil>((set, get) => ({
 
 export default useMessages;
 
-export function parseMessage(rawMessage: any): Message {
+export function parseChatMessage(rawMessage: any): Message {
   return {
     id: rawMessage.id,
     role: RoleType.GPT,
     content: rawMessage.choices[0].message.content,
     sentTime: rawMessage.created,
+  };
+}
+
+export function parseImageMessage(rawMessage: any): Message {
+  return {
+    id: random(),
+    role: RoleType.GPT,
+    content: rawMessage.url,
+    sentTime: Date.now(),
   };
 }

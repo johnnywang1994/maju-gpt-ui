@@ -11,7 +11,7 @@ const envMaxTokens =
 
 const maxMessages = Number(process.env.NEXT_PUBLIC_OPENAI_MAX_MESSAGES) || 8;
 
-export async function sendUserCompletions(options: SendOptions) {
+export async function sendUserCompletions(options: SendCompletionOptions) {
   const {
     messages,
     temperature,
@@ -31,16 +31,35 @@ export async function sendUserCompletions(options: SendOptions) {
   return chatCompletion;
 }
 
+export async function sendImageGenerate(options: SendImageGenerateOptions) {
+  const {
+    prompt,
+    model,
+  } = options;
+  const imageGeneratedRes = await openai.images.generate({
+    prompt,
+    model,
+    n: 1,
+    size: '1024x1024',
+  });
+  return imageGeneratedRes;
+}
+
 interface Message {
   role: string; // 'user' | 'system' | 'assistant'
   content: string;
 }
 
-interface SendOptions {
+interface SendCompletionOptions {
   messages: Message[];
   temperature: number;
   maxTokens: number;
   model: string;
   frequencyPenalty: number;
   presencePenalty: number;
+}
+
+interface SendImageGenerateOptions {
+  prompt: string;
+  model: string;
 }

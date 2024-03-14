@@ -35,7 +35,15 @@ const MessageItem: FC<Props> = ({ names, message, onDelete }) => {
       <div className="pl-10 dark:text-gray-100">
         <h4>{isGPT ? names.assistant : names.user}</h4>
         <div>
-          <Markdown content={content} />
+          {
+            isGPT && content.startsWith('https://')
+              ? <img
+                  className="max-w-[500px]"
+                  src={content}
+                  alt="Image is deleted."
+                />
+              : <Markdown content={content} />
+          }
         </div>
         {/* actions */}
         <div className="absolute right-0 top-0">

@@ -1,8 +1,9 @@
 "use client";
 import { SendMessage } from "@/types/message";
 import { snakifyKeys } from "@/lib/common";
+import { PageTab } from "@/hooks/useCommon";
 
-interface SendOptions {
+interface SendUserCompletionsOptions {
   messages: SendMessage[];
   temperature: number;
   token?: string;
@@ -14,7 +15,7 @@ interface SendOptions {
 }
 
 export async function sendUserCompletions(
-  options: SendOptions,
+  options: SendUserCompletionsOptions,
   apiKey?: string
 ) {
   let res: any;
@@ -31,6 +32,46 @@ export async function sendUserCompletions(
         body: JSON.stringify(snakifyKeys(options)),
       });
     } else {
+      res = await fetch("/api/completions", {
+        method: "POST",
+        body: JSON.stringify(options),
+      });
+    }
+    const data = await res.json();
+    return data;
+  } catch {
+    return res;
+  }
+}
+
+interface SendImageGenerateOptions {
+  model: string;
+  prompt: string;
+  token?: string;
+}
+
+export async function sendImageGenerate(
+  options: SendImageGenerateOptions,
+  apiKey?: string
+) {
+  let res: any;
+  try {
+    if (apiKey) {
+      delete options["token"];
+      res = await fetch("https://api.openai.com/v1/images/generations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(snakifyKeys({
+          ...options,
+          n: 1,
+          size: '1024x1024',
+        })),
+      });
+    } else {
       res = await fetch("/api/generate", {
         method: "POST",
         body: JSON.stringify(options),
@@ -40,5 +81,16 @@ export async function sendUserCompletions(
     return data;
   } catch {
     return res;
+  }
+}
+
+export function sendMessage(tab: PageTab, options: any, apiKey?: string) {
+  switch (tab) {
+    case PageTab.Chat:
+      return sendUserCompletions(options, apiKey);
+    case PageTab.Image:
+      return sendImageGenerate(options, apiKey);
+    default:
+      break;
   }
 }

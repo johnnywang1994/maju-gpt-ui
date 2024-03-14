@@ -45,3 +45,9 @@ NEXT_PUBLIC_MODE=host
 
 ## Line Auth
 If you want to auth for user from your channel, just adjust env and you're ready to go!
+
+
+## Image Generation
+By default, chat room only accept ChatGPT to response with chat texting, if you want to make ChatGPT to generate image for you, change the response type in Sidebar to `Image`, and change the model in Settings to "DALL·E 3" or "DALL·E 2", then input the prompt to tell ChatGPT to generate image by your description.
+
+And of course if you want to continue to chat with ChatGPT, please change the model and response type to original settings.

@@ -1,16 +1,27 @@
 "use client";
 import { FC, PropsWithChildren } from "react";
 import clsx from "clsx";
-import { Button, Popconfirm } from "antd";
+import { Button, Popconfirm, Tabs, TabsProps } from "antd";
 import { Icon } from "@iconify/react";
+import useCommon, { PageTab } from '@/hooks/useCommon';
 import useMessages, { newRoom } from "@/hooks/useMessages";
 import EditableText from "@/components/EditableText";
+
+
+const items: TabsProps['items'] = [{
+  key: PageTab.Chat,
+  label: 'Chat',
+}, {
+  key: PageTab.Image,
+  label: 'Image',
+}]
 
 interface Props extends PropsWithChildren {
   onClose?: () => void;
 }
 
 const MySidebar: FC<Props> = ({ onClose }) => {
+  const { setPageTab } = useCommon();
   const {
     isInited,
     roomHistory,
@@ -22,6 +33,11 @@ const MySidebar: FC<Props> = ({ onClose }) => {
 
   return isInited ? (
     <div className="h-full px-4 py-6 overflow-auto">
+      <Tabs
+        items={items}
+        className="[&_.ant-tabs-nav-wrap]:justify-center"
+        onChange={(key) => setPageTab(key as PageTab)}
+      />
       <div>
         <Button
           className="w-full"
