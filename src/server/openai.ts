@@ -35,12 +35,13 @@ export async function sendImageGenerate(options: SendImageGenerateOptions) {
   const {
     prompt,
     model,
+    size,
   } = options;
   const imageGeneratedRes = await openai.images.generate({
     prompt,
     model,
     n: 1,
-    size: '1024x1024',
+    size: size as any,
   });
   return imageGeneratedRes;
 }
@@ -62,4 +63,5 @@ interface SendCompletionOptions {
 interface SendImageGenerateOptions {
   prompt: string;
   model: string;
+  size: string;
 }

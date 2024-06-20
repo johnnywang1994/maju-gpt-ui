@@ -47,6 +47,7 @@ export async function sendUserCompletions(
 interface SendImageGenerateOptions {
   model: string;
   prompt: string;
+  size: string;
   token?: string;
 }
 
@@ -68,7 +69,6 @@ export async function sendImageGenerate(
         body: JSON.stringify(snakifyKeys({
           ...options,
           n: 1,
-          size: '1024x1024',
         })),
       });
     } else {

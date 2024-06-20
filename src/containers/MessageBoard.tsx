@@ -3,7 +3,8 @@ import { FC, useRef, useEffect } from "react";
 import { message } from "antd";
 import BackTop from "antd/es/float-button/BackTop";
 import useLiff from "@/hooks/useLiff";
-import useCommon, { PageTab, localSettingKey } from "@/hooks/useCommon";
+import useUpdate from '@/hooks/useUpdate';
+import useCommon, { PageTab, DefaultModel, localSettingKey } from "@/hooks/useCommon";
 import useMessages from "@/hooks/useMessages";
 import { sendMessage } from "./MessageContainer/api";
 import MessageContainer from "./MessageContainer";
@@ -73,6 +74,7 @@ const MessageBoard: FC = () => {
         token: accessToken,
         prompt: newMessage.content,
         model: settings.model,
+        size: settings.size
       };
       // not valid image generate model
       if (
@@ -106,6 +108,15 @@ const MessageBoard: FC = () => {
     });
   }, [messages]);
 
+  // reset default model when changing pageTab
+  useUpdate(() => {
+    // prevent overwriting local cache
+    setSettings({
+      model: pageTab === PageTab.Chat ? DefaultModel.Chat : DefaultModel.Image,
+    });
+  }, [pageTab]);
+
+  // init settings by local cache
   useEffect(() => {
     const prevSettings = localStorage.getItem(localSettingKey);
     if (!!prevSettings) {

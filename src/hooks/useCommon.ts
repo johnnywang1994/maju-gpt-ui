@@ -6,11 +6,17 @@ export enum PageTab {
   Image = 'image',
 }
 
+export enum DefaultModel {
+  Chat = 'gpt-4o',
+  Image = 'dall-e-3'
+}
+
 interface Settings {
   username: string;
   gptname: string;
   model: string;
   temperature: number;
+  size: string;
   maxTokens: number;
   frequencyPenalty: number;
   presencePenalty: number;
@@ -49,8 +55,9 @@ const useCommon = create<StoreUtil>((set, get) => ({
     username: "Me",
     gptname: "ChatGPT",
     // api options
-    model: "gpt-3.5-turbo",
+    model: DefaultModel.Chat,
     temperature: 0.5,
+    size: '1024x1024',
     maxTokens: Math.min(256, MAX_TOKENS),
     frequencyPenalty: 0,
     presencePenalty: 0,
@@ -91,17 +98,18 @@ const useCommon = create<StoreUtil>((set, get) => ({
   },
 
   setSettings: (newSettings: Partial<Settings> & { apiKey?: string }) => {
-    const { settings } = get();
-    let apiKey;
+    const { settings, apiKey: cacheApiKey } = get();
+    let apiKey = cacheApiKey;
     if (newSettings.apiKey) {
       apiKey = newSettings.apiKey;
       delete newSettings["apiKey"];
     }
+    const replaceSettings = { ...settings, ...newSettings };
     set({
-      apiKey: apiKey || undefined,
-      settings: { ...settings, ...newSettings },
+      apiKey,
+      settings: replaceSettings,
     });
-    localStorage.setItem(localSettingKey, JSON.stringify(newSettings));
+    localStorage.setItem(localSettingKey, JSON.stringify(replaceSettings));
   },
 }));
 

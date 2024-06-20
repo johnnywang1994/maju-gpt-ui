@@ -11,7 +11,7 @@ import {
 } from "antd";
 import { Icon } from "@iconify/react";
 
-import useCommon from "@/hooks/useCommon";
+import useCommon, { DefaultModel, PageTab } from "@/hooks/useCommon";
 import { MAX_TOKENS, MODE } from "@/lib/env";
 
 const isStatic = MODE === "static";
@@ -23,6 +23,7 @@ export enum FieldNames {
   GPTName = "gptname",
   Model = "model",
   Temperature = "temperature",
+  Size = 'size', // for image generation
   MaxTokens = "maxTokens",
   FrequencyPenalty = "frequencyPenalty",
   PresencePenalty = "presencePenalty",
@@ -57,10 +58,14 @@ const temperatureOptions = [
 ];
 
 // https://platform.openai.com/docs/models/model-endpoint-compatibility
-const modelOptions = [
+const chatModelOptions = [
   {
-    label: "GPT 4 Turbo Preview(2023/12)",
-    value: "gpt-4-turbo-preview",
+    label: "GPT-4o(2024/05)",
+    value: "gpt-4o",
+  },
+  {
+    label: "GPT 4 Turbo(2024/04)",
+    value: "gpt-4-turbo",
   },
   {
     label: "GPT 4(2021/09)",
@@ -70,6 +75,9 @@ const modelOptions = [
     label: "GPT 3.5 Turbo(2021/09)",
     value: "gpt-3.5-turbo",
   },
+];
+
+const imageModelOptions = [
   {
     label: "DALL·E 3",
     value: "dall-e-3",
@@ -80,16 +88,28 @@ const modelOptions = [
   }
 ];
 
+const dall2SizeOptions = ['256x256', '512x512', '1024x1024'];
+const dall3SizeOptions = ['1024x1024', '1792x1024', '1024x1792'];
+
 const Settings: FC<Props> = () => {
   const [form] = Form.useForm();
+  const watchModel = Form.useWatch(FieldNames.Model, form);
   const watchMaxTokens = Form.useWatch(FieldNames.MaxTokens, form);
   const watchFrequencyPenalty = Form.useWatch(
     FieldNames.FrequencyPenalty,
     form
   );
+  const watchPresencePenalty = Form.useWatch(
+    FieldNames.PresencePenalty,
+    form
+  );
 
-  const { settings, computed, setSettings, toggleSetting } = useCommon();
+  const { settings, pageTab, computed, setSettings, toggleSetting } = useCommon();
   const [openPreviewModal, setPreviewModal] = useState(false);
+
+  const modelOptions = pageTab === PageTab.Chat ? chatModelOptions : imageModelOptions;
+
+  const sizeOptions = (watchModel === 'dall-e-3' ? dall3SizeOptions : dall2SizeOptions).map((v) => ({ label: v, value: v }));
 
   const initialValue = useMemo(
     () => ({
@@ -97,6 +117,7 @@ const Settings: FC<Props> = () => {
       [FieldNames.GPTName]: settings.gptname,
       [FieldNames.Model]: settings.model,
       [FieldNames.Temperature]: settings.temperature,
+      [FieldNames.Size]: settings.size,
       [FieldNames.MaxTokens]: settings.maxTokens,
       [FieldNames.FrequencyPenalty]: settings.frequencyPenalty,
       [FieldNames.PresencePenalty]: settings.presencePenalty,
@@ -117,6 +138,7 @@ const Settings: FC<Props> = () => {
     message.success("New settings applied");
   };
 
+  // reset invalid value
   useEffect(() => {
     if (watchMaxTokens > MAX_TOKENS) {
       form.setFieldValue(FieldNames.MaxTokens, MAX_TOKENS);
@@ -124,7 +146,18 @@ const Settings: FC<Props> = () => {
     if (watchFrequencyPenalty < -2 || watchFrequencyPenalty > 2) {
       form.setFieldValue(FieldNames.FrequencyPenalty, 0);
     }
-  }, [form, watchMaxTokens, watchFrequencyPenalty]);
+    if (watchPresencePenalty < -2 || watchPresencePenalty > 2) {
+      form.setFieldValue(FieldNames.PresencePenalty, 0);
+    }
+  }, [form, watchMaxTokens, watchFrequencyPenalty, watchPresencePenalty]);
+
+  // reset form model value when changing pageTab
+  useEffect(() => {
+    form.setFieldValue(
+      FieldNames.Model,
+      pageTab === PageTab.Chat ? DefaultModel.Chat : DefaultModel.Image
+    );
+  }, [form, pageTab]);
 
   return (
     <div className="text-white">
@@ -172,9 +205,15 @@ const Settings: FC<Props> = () => {
           <Select options={modelOptions} />
         </Form.Item>
 
-        <Form.Item name={FieldNames.Temperature} label="Temperature">
-          <Select options={temperatureOptions} />
-        </Form.Item>
+        {pageTab === PageTab.Chat ? (
+          <Form.Item name={FieldNames.Temperature} label="Temperature">
+            <Select options={temperatureOptions} />
+          </Form.Item>
+        ) : (
+          <Form.Item name={FieldNames.Size} label="Image Size">
+            <Select options={sizeOptions} />
+          </Form.Item>
+        )}
 
         <Form.Item
           name={FieldNames.MaxTokens}

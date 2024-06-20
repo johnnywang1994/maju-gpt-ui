@@ -17,6 +17,7 @@ export async function POST(request: Request) {
     const {
       prompt,
       model,
+      size,
       token,
     } = body;
     if (enableAuth) {
@@ -27,6 +28,7 @@ export async function POST(request: Request) {
     const result = await sendImageGenerate({
       prompt,
       model,
+      size,
     });
     return success(result);
   } catch (err) {
