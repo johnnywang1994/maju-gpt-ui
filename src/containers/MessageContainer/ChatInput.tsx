@@ -2,7 +2,7 @@ import { FC, PropsWithChildren } from "react";
 import { Space, Input, Button } from "antd";
 import { Icon } from "@iconify/react";
 import useInput from "@/hooks/useInput";
-
+const { TextArea } = Input;
 interface Props extends PropsWithChildren {
   loading: boolean;
   onSubmit: (input: string) => Promise<void>;
@@ -18,12 +18,13 @@ const ChatInput: FC<Props> = ({ loading, onSubmit }) => {
 
   return (
     <Space.Compact style={{ width: "100%" }}>
-      <Input
+      <TextArea
         placeholder="Send message to ChatGPT..."
         size="large"
         disabled={loading}
         value={input}
         onChange={handleInput}
+        autoSize={{ minRows: 1, maxRows: 6 }}
       />
       <Button
         type="primary"
