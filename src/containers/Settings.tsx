@@ -60,8 +60,16 @@ const temperatureOptions = [
 // https://platform.openai.com/docs/models/model-endpoint-compatibility
 const chatModelOptions = [
   {
-    label: "GPT-4o(2024/05)",
+    label: "GPT-4o",
     value: "gpt-4o",
+  },
+  {
+    label: "o1 preview",
+    value: "o1-preview"
+  },
+  {
+    label: "o1 mini",
+    value: "o1-mini"
   },
   {
     label: "GPT 4 Turbo(2024/04)",

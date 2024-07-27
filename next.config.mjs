@@ -19,6 +19,30 @@ const nextConfig = {
     });
     return config;
   },
+  // for Gemini generate content API
+  ...(isStatic ? {} : {
+    async headers() {
+      return [
+        {
+          source: "/api/gemini-generate",
+          headers: [
+            {
+              key: "Access-Control-Allow-Origin",
+              value: "*",
+            },
+            {
+              key: "Access-Control-Allow-Methods",
+              value: "POST",
+            },
+            {
+              key: "Access-Control-Allow-Headers",
+              value: "Content-Type, Authorization",
+            },
+          ],
+        },
+      ];
+    },
+  }),
 };
 
 export default withBundleAnalyzer(nextConfig);

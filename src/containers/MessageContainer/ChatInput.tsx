@@ -28,6 +28,14 @@ const ChatInput: FC<Props> = ({ loading, onSubmit }) => {
       <Button
         type="primary"
         size="large"
+      >
+        <div className="h-full flex items-center">
+          <Icon icon="mdi:microphone" />
+        </div>
+      </Button>
+      <Button
+        type="primary"
+        size="large"
         disabled={loading}
         onClick={handleSubmit}
       >

@@ -9,6 +9,9 @@ This is a simple UI for ChatGPT, integrated with LIFF login if you want. Chat da
 # server side
 OPENAI_API_KEY= #optional if mode is host
 LINE_CHANNEL_ID= #optional if enable liff auth
+NODE_TLS_REJECT_UNAUTHORIZED=0 #optional for gemini api route
+GEMINI_API_KEY= #optional for gemini api route
+GEMINI_API_AUTH_TOKEN= #optional for gemini api route
 
 # client side
 NEXT_PUBLIC_MODE=host # static or host

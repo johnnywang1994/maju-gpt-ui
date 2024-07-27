@@ -1,3 +1,4 @@
+'use client';
 import dynamic from "next/dynamic";
 import Layout from "antd/es/layout";
 import { Header, Content } from "antd/es/layout/layout";
