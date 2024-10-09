@@ -20,6 +20,8 @@ const MessageItem: FC<Props> = ({ names, message, onDelete }) => {
   const { content, role } = message;
   const isGPT = role === RoleType.GPT;
   const avatarColor = isGPT ? "bg-sky-500" : "bg-orange-500";
+  const formattedContent = content.replace(/\n/g, "  \n");
+  
   return (
     <div className="relative mt-4 text-sm md:text-base">
       <div className="absolute left-0 top-0">
@@ -42,7 +44,7 @@ const MessageItem: FC<Props> = ({ names, message, onDelete }) => {
                   src={content}
                   alt="Image is deleted."
                 />
-              : <Markdown content={content} />
+              : <Markdown content={formattedContent} />
           }
         </div>
         {/* actions */}
