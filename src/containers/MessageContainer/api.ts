@@ -1,11 +1,12 @@
 "use client";
 import { SendMessage } from "@/types/message";
 import { snakifyKeys } from "@/lib/common";
-import { PageTab } from "@/hooks/useCommon";
+import { PageTab, ModelProvider } from "@/hooks/useCommon";
 
 interface SendUserCompletionsOptions {
   messages: SendMessage[];
   temperature: number;
+  provider?: ModelProvider;
   token?: string;
   maxTokens?: number;
   model?: string;
@@ -21,8 +22,11 @@ export async function sendUserCompletions(
   let res: any;
   try {
     if (apiKey) {
+      const provider = options.provider;
+      delete options["provider"];
       delete options["token"];
-      res = await fetch("https://api.openai.com/v1/chat/completions", {
+      const baseURL = provider === ModelProvider.DeepSeek ? "https://api.deepseek.com" : "https://api.openai.com";
+      res = await fetch(`${baseURL}/v1/chat/completions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

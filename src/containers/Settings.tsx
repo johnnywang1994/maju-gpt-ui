@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useState, useMemo, useEffect } from "react";
+import { FC, PropsWithChildren, useState, useMemo, useEffect, use } from "react";
 import {
   Space,
   Form,
@@ -11,7 +11,8 @@ import {
 } from "antd";
 import { Icon } from "@iconify/react";
 
-import useCommon, { DefaultModel, PageTab } from "@/hooks/useCommon";
+import useCommon, { DefaultModel, ModelProvider, PageTab, localSettingKey } from "@/hooks/useCommon";
+import useUpdate from '@/hooks/useUpdate';
 import { MAX_TOKENS, MODE } from "@/lib/env";
 
 const isStatic = MODE === "static";
@@ -21,6 +22,7 @@ interface Props extends PropsWithChildren {}
 export enum FieldNames {
   Username = "username",
   GPTName = "gptname",
+  Provider = "provider",
   Model = "model",
   Temperature = "temperature",
   Size = 'size', // for image generation
@@ -57,33 +59,61 @@ const temperatureOptions = [
   },
 ];
 
-// https://platform.openai.com/docs/models/model-endpoint-compatibility
-const chatModelOptions = [
+const chatModelProviderOptions = [
   {
-    label: "GPT-4o",
-    value: "gpt-4o",
+    label: 'OpenAI',
+    value: ModelProvider.OpenAI
   },
   {
-    label: "o1 preview",
-    value: "o1-preview"
-  },
-  {
-    label: "o1 mini",
-    value: "o1-mini"
-  },
-  {
-    label: "GPT 4 Turbo(2024/04)",
-    value: "gpt-4-turbo",
-  },
-  {
-    label: "GPT 4(2021/09)",
-    value: "gpt-4",
-  },
-  {
-    label: "GPT 3.5 Turbo(2021/09)",
-    value: "gpt-3.5-turbo",
-  },
+    label: 'DeepSeek',
+    value: ModelProvider.DeepSeek
+  }
 ];
+
+const chatModelOptions = {
+  // https://platform.openai.com/docs/models/model-endpoint-compatibility
+  [ModelProvider.OpenAI]: [
+    {
+      label: "GPT-4o",
+      value: "gpt-4o",
+    },
+    {
+      label: "GPT-4o mini",
+      value: "gpt-4o-mini",
+    },
+    {
+      label: "o1",
+      value: "o1",
+    },
+    {
+      label: "o1 mini",
+      value: "o1-mini",
+    },
+    {
+      label: "GPT 4 Turbo(2024/04)",
+      value: "gpt-4-turbo",
+    },
+    {
+      label: "GPT 4(2021/09)",
+      value: "gpt-4",
+    },
+    {
+      label: "GPT 3.5 Turbo(2021/09)",
+      value: "gpt-3.5-turbo",
+    },
+  ],
+  // https://api-docs.deepseek.com/zh-cn/
+  [ModelProvider.DeepSeek]: [
+    {
+      label: "DeepSeek Chat",
+      value: "deepseek-chat",
+    },
+    {
+      label: "DeepSeek R1",
+      value: "deepseek-reasoner",
+    },
+  ],
+}
 
 const imageModelOptions = [
   {
@@ -101,6 +131,7 @@ const dall3SizeOptions = ['1024x1024', '1792x1024', '1024x1792'];
 
 const Settings: FC<Props> = () => {
   const [form] = Form.useForm();
+  const watchProvider: ModelProvider = Form.useWatch(FieldNames.Provider, form);
   const watchModel = Form.useWatch(FieldNames.Model, form);
   const watchMaxTokens = Form.useWatch(FieldNames.MaxTokens, form);
   const watchFrequencyPenalty = Form.useWatch(
@@ -115,7 +146,7 @@ const Settings: FC<Props> = () => {
   const { settings, pageTab, computed, setSettings, toggleSetting } = useCommon();
   const [openPreviewModal, setPreviewModal] = useState(false);
 
-  const modelOptions = pageTab === PageTab.Chat ? chatModelOptions : imageModelOptions;
+  const modelOptions = pageTab === PageTab.Chat ? chatModelOptions[watchProvider] : imageModelOptions;
 
   const sizeOptions = (watchModel === 'dall-e-3' ? dall3SizeOptions : dall2SizeOptions).map((v) => ({ label: v, value: v }));
 
@@ -123,6 +154,7 @@ const Settings: FC<Props> = () => {
     () => ({
       [FieldNames.Username]: settings.username,
       [FieldNames.GPTName]: settings.gptname,
+      [FieldNames.Provider]: settings.provider,
       [FieldNames.Model]: settings.model,
       [FieldNames.Temperature]: settings.temperature,
       [FieldNames.Size]: settings.size,
@@ -159,13 +191,55 @@ const Settings: FC<Props> = () => {
     }
   }, [form, watchMaxTokens, watchFrequencyPenalty, watchPresencePenalty]);
 
+  // reset model value when changing provider
+  useUpdate(() => {
+    switch (watchProvider) {
+      case ModelProvider.OpenAI:
+        form.setFieldValue(FieldNames.Model, DefaultModel.Chat);
+        break;
+      case ModelProvider.DeepSeek:
+        form.setFieldValue(FieldNames.Model, DefaultModel.DeepSeekChat);
+        break;
+      default:
+        break;
+    }
+  }, [watchProvider]);
+
   // reset form model value when changing pageTab
-  useEffect(() => {
-    form.setFieldValue(
-      FieldNames.Model,
-      pageTab === PageTab.Chat ? DefaultModel.Chat : DefaultModel.Image
-    );
+  useUpdate(() => {
+    switch (pageTab) {
+      case PageTab.Chat:
+        form.setFieldValue(FieldNames.Model, DefaultModel.Chat);
+        setSettings({
+          model: pageTab === PageTab.Chat ? DefaultModel.Chat : DefaultModel.Image,
+        });
+        break;
+      case PageTab.Image:
+        // OpenAI support Image tab
+        if (settings.provider !== ModelProvider.OpenAI) {
+          const values = {
+            [FieldNames.Provider]: ModelProvider.OpenAI,
+            [FieldNames.Model]: DefaultModel.Image,
+          };
+          form.setFieldsValue(values);
+          setSettings(values);
+          break;
+        }
+        break;
+      default:
+        break;
+    }
   }, [form, pageTab]);
+
+  // init settings by local cache
+  useEffect(() => {
+    const prevSettings = localStorage.getItem(localSettingKey);
+    if (!!prevSettings) {
+      try {
+        setSettings(JSON.parse(prevSettings));
+      } catch {}
+    }
+  }, [setSettings]);
 
   return (
     <div className="text-white">
@@ -209,7 +283,11 @@ const Settings: FC<Props> = () => {
           </Form.Item>
         )}
 
-        <Form.Item name={FieldNames.Model} label="ChatGPT Model">
+        <Form.Item name={FieldNames.Provider} label="Provider">
+          <Select options={chatModelProviderOptions} />
+        </Form.Item>
+
+        <Form.Item name={FieldNames.Model} label="Model">
           <Select options={modelOptions} />
         </Form.Item>
 

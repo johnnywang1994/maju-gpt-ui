@@ -1,10 +1,12 @@
 // Reference
 // https://blog.designly.biz/react-markdown-how-to-create-a-copy-code-button
-import { FC, PropsWithChildren, ReactElement } from "react";
+import React, { FC, PropsWithChildren, ReactElement } from "react";
 import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { Prism, SyntaxHighlighterProps } from "react-syntax-highlighter";
 import a11yDark from "react-syntax-highlighter/dist/cjs/styles/prism/a11y-dark";
 import CopyButton from "./CopyButton";
+
+const SyntaxHighlighter = (Prism as unknown) as React.FC<SyntaxHighlighterProps>;
 
 interface MarkdownProps {
   content: string;

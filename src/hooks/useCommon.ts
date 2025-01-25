@@ -8,12 +8,19 @@ export enum PageTab {
 
 export enum DefaultModel {
   Chat = 'gpt-4o',
+  DeepSeekChat = 'deepseek-chat',
   Image = 'dall-e-3'
+}
+
+export enum ModelProvider {
+  OpenAI = 'openai',
+  DeepSeek = 'deepseek',
 }
 
 interface Settings {
   username: string;
   gptname: string;
+  provider: ModelProvider;
   model: string;
   temperature: number;
   size: string;
@@ -54,6 +61,7 @@ const useCommon = create<StoreUtil>((set, get) => ({
     // user options
     username: "Me",
     gptname: "ChatGPT",
+    provider: ModelProvider.OpenAI,
     // api options
     model: DefaultModel.Chat,
     temperature: 0.5,

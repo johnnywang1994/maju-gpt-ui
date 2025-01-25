@@ -4,6 +4,11 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const deepseek = new OpenAI({
+  baseURL: "https://api.deepseek.com",
+  apiKey: process.env.DEEPSEEK_API_KEY,
+});
+
 export default openai;
 
 const envMaxTokens =
@@ -16,14 +21,17 @@ export async function sendUserCompletions(options: SendCompletionOptions) {
     messages,
     temperature,
     maxTokens,
+    provider,
     model,
     frequencyPenalty,
     presencePenalty,
   } = options;
-  const chatCompletion = await openai.chat.completions.create({
+  const handler = provider === "deepseek" ? deepseek : openai;
+
+  const chatCompletion = await handler.chat.completions.create({
     messages: messages.slice(-maxMessages) as any,
     model,
-    max_tokens: Math.min(envMaxTokens, maxTokens),
+    max_completion_tokens: Math.min(envMaxTokens, maxTokens),
     temperature,
     frequency_penalty: frequencyPenalty,
     presence_penalty: presencePenalty,
@@ -52,6 +60,7 @@ interface Message {
 }
 
 interface SendCompletionOptions {
+  provider: string; // 'openai' | 'deepseek'
   messages: Message[];
   temperature: number;
   maxTokens: number;

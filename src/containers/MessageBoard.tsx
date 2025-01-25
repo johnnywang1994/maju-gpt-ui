@@ -3,8 +3,7 @@ import { FC, useRef, useEffect } from "react";
 import { message } from "antd";
 import BackTop from "antd/es/float-button/BackTop";
 import useLiff from "@/hooks/useLiff";
-import useUpdate from '@/hooks/useUpdate';
-import useCommon, { PageTab, DefaultModel, localSettingKey } from "@/hooks/useCommon";
+import useCommon, { PageTab } from "@/hooks/useCommon";
 import useMessages from "@/hooks/useMessages";
 import { sendMessage } from "./MessageContainer/api";
 import MessageContainer from "./MessageContainer";
@@ -16,7 +15,7 @@ const isStatic = MODE === "static";
 const MessageBoard: FC = () => {
   const ref = useRef(null);
   const { messages } = useMessages();
-  const { settings, pageTab, computed, apiKey, setSettings } = useCommon();
+  const { settings, pageTab, computed, apiKey } = useCommon();
   const { accessToken } = useLiff();
 
   const handleMessages = (newMessage: SendMessage) => {
@@ -64,6 +63,7 @@ const MessageBoard: FC = () => {
     try {
       const options = pageTab === PageTab.Chat ? {
         messages: handleMessages(newMessage),
+        provider: settings.provider,
         token: accessToken,
         temperature: settings.temperature,
         maxTokens: settings.maxTokens,
@@ -107,24 +107,6 @@ const MessageBoard: FC = () => {
       behavior: "smooth",
     });
   }, [messages]);
-
-  // reset default model when changing pageTab
-  useUpdate(() => {
-    // prevent overwriting local cache
-    setSettings({
-      model: pageTab === PageTab.Chat ? DefaultModel.Chat : DefaultModel.Image,
-    });
-  }, [pageTab]);
-
-  // init settings by local cache
-  useEffect(() => {
-    const prevSettings = localStorage.getItem(localSettingKey);
-    if (!!prevSettings) {
-      try {
-        setSettings(JSON.parse(prevSettings));
-      } catch {}
-    }
-  }, [setSettings]);
 
   return (
     <div ref={ref} className="h-full overflow-auto">

@@ -16,6 +16,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const {
       messages,
+      provider,
       token,
       temperature,
       maxTokens,
@@ -32,6 +33,7 @@ export async function POST(request: Request) {
       messages,
       temperature,
       maxTokens,
+      provider,
       model,
       frequencyPenalty,
       presencePenalty,
