@@ -8,9 +8,10 @@ This is a simple UI for ChatGPT, integrated with LIFF login if you want. Chat da
 ```bash
 # server side
 OPENAI_API_KEY= #optional if mode is host
+DEEPSEEK_API_KEY= #optional if you want to support provider Deepseek
 LINE_CHANNEL_ID= #optional if enable liff auth
 NODE_TLS_REJECT_UNAUTHORIZED=0 #optional for gemini api route
-GEMINI_API_KEY= #optional for gemini api route
+GEMINI_API_KEY= #optional for gemini api route and provider Gemini
 GEMINI_API_AUTH_TOKEN= #optional for gemini api route
 
 # client side
@@ -37,6 +38,8 @@ This will allow build into static bundles to deploy to any static server, which 
 NEXT_PUBLIC_MODE=static
 NEXT_PUBLIC_ENABLE_AUTH=false
 ```
+
+> Since API calls at client side in static mode, provider Gemini is not currently supported.
 
 ### host mode
 This will allow to call api to NextJs server with your given API key in env. This won't ask user to enter API key.
