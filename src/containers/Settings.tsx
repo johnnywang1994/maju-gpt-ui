@@ -13,6 +13,7 @@ import { Icon } from "@iconify/react";
 
 import useCommon, { DefaultModel, ModelProvider, PageTab, localSettingKey } from "@/hooks/useCommon";
 import useUpdate from '@/hooks/useUpdate';
+import usePrevious from "@/hooks/usePrevious";
 import { MAX_TOKENS, MODE } from "@/lib/env";
 
 const isStatic = MODE === "static";
@@ -67,6 +68,10 @@ const chatModelProviderOptions = [
   {
     label: 'DeepSeek',
     value: ModelProvider.DeepSeek
+  },
+  {
+    label: 'Gemini',
+    value: ModelProvider.Gemini
   }
 ];
 
@@ -113,6 +118,17 @@ const chatModelOptions = {
       value: "deepseek-reasoner",
     },
   ],
+  // https://ai.google.dev/gemini-api/docs/models/gemini?hl=zh-tw
+  [ModelProvider.Gemini]: [
+    {
+      label: "Gemini 1.5 Flash",
+      value: "gemini-1.5-flash",
+    },
+    {
+      label: "Gemini 1.5 Flash 8B(small task)",
+      value: "gemini-1.5-flash-8b",
+    },
+  ],
 }
 
 const imageModelOptions = [
@@ -144,6 +160,7 @@ const Settings: FC<Props> = () => {
   );
 
   const { settings, pageTab, computed, setSettings, toggleSetting } = useCommon();
+  const prevPageTab = usePrevious(pageTab, (prev, curr) => prev === curr);
   const [openPreviewModal, setPreviewModal] = useState(false);
 
   const modelOptions = pageTab === PageTab.Chat ? chatModelOptions[watchProvider] : imageModelOptions;
@@ -200,6 +217,9 @@ const Settings: FC<Props> = () => {
       case ModelProvider.DeepSeek:
         form.setFieldValue(FieldNames.Model, DefaultModel.DeepSeekChat);
         break;
+      case ModelProvider.Gemini:
+        form.setFieldValue(FieldNames.Model, DefaultModel.GeminiChat);
+        break;
       default:
         break;
     }
@@ -207,12 +227,17 @@ const Settings: FC<Props> = () => {
 
   // reset form model value when changing pageTab
   useUpdate(() => {
+    // pageTab update will be mistakenly triggered by other state change
+    // so we need to check if it's really changed here
+    if (prevPageTab === pageTab) return;
     switch (pageTab) {
       case PageTab.Chat:
-        form.setFieldValue(FieldNames.Model, DefaultModel.Chat);
-        setSettings({
-          model: pageTab === PageTab.Chat ? DefaultModel.Chat : DefaultModel.Image,
-        });
+        const values = {
+          [FieldNames.Provider]: ModelProvider.OpenAI,
+          [FieldNames.Model]: DefaultModel.Chat,
+        };
+        form.setFieldsValue(values);
+        setSettings(values);
         break;
       case PageTab.Image:
         // OpenAI support Image tab
@@ -229,14 +254,16 @@ const Settings: FC<Props> = () => {
       default:
         break;
     }
-  }, [form, pageTab]);
+  }, [form, prevPageTab, pageTab]);
 
   // init settings by local cache
   useEffect(() => {
-    const prevSettings = localStorage.getItem(localSettingKey);
-    if (!!prevSettings) {
+    const prevSettingsRaw = localStorage.getItem(localSettingKey);
+    if (!!prevSettingsRaw) {
+      const prevSettings = JSON.parse(prevSettingsRaw);
       try {
-        setSettings(JSON.parse(prevSettings));
+        setSettings(prevSettings);
+        form.setFieldsValue(prevSettings);
       } catch {}
     }
   }, [setSettings]);

@@ -59,7 +59,7 @@ interface Message {
   content: string;
 }
 
-interface SendCompletionOptions {
+export interface SendCompletionOptions {
   provider: string; // 'openai' | 'deepseek'
   messages: Message[];
   temperature: number;

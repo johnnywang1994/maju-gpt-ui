@@ -8,7 +8,8 @@ export async function sendGenerateContent(options: SendGenerateContentOptions) {
   }
   const genAI = new GoogleGenerativeAI(API_KEY);
   const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
+    model: options?.model ?? "gemini-1.5-flash",
+    // systemInstruction: "You are a software engineer who is trying to debug a piece of code.",
     generationConfig: {
       maxOutputTokens: options?.maxTokens ?? 2048,
       temperature: options?.temperature ?? 0.7,
@@ -23,6 +24,7 @@ export async function sendGenerateContent(options: SendGenerateContentOptions) {
 
 interface SendGenerateContentOptions {
   prompt: string;
-  temperature: number;
-  maxTokens: number;
+  model?: string;
+  temperature?: number;
+  maxTokens?: number;
 }

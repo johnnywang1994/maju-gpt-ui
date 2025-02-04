@@ -9,12 +9,14 @@ export enum PageTab {
 export enum DefaultModel {
   Chat = 'gpt-4o',
   DeepSeekChat = 'deepseek-chat',
+  GeminiChat = 'gemini-1.5-flash',
   Image = 'dall-e-3'
 }
 
 export enum ModelProvider {
   OpenAI = 'openai',
   DeepSeek = 'deepseek',
+  Gemini = 'gemini',
 }
 
 interface Settings {
