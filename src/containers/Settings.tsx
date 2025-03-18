@@ -87,6 +87,14 @@ const chatModelOptions = {
       value: "gpt-4o",
     },
     {
+      label: "GPT-4o mini(search)",
+      value: "gpt-4o-mini-search-preview",
+    },
+    {
+      label: "GPT-4o(search)",
+      value: "gpt-4o-search-preview",
+    },
+    {
       label: "o3 mini",
       value: "o3-mini",
     },

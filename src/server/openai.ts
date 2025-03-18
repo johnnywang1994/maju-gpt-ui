@@ -16,6 +16,8 @@ const envMaxTokens =
 
 const maxMessages = Number(process.env.NEXT_PUBLIC_OPENAI_MAX_MESSAGES) || 8;
 
+const webSearchModels = new Set(['gpt-4o-mini-search-preview', 'gpt-4o-search-preview']);
+
 export async function sendUserCompletions(options: SendCompletionOptions) {
   const {
     messages,
@@ -26,15 +28,23 @@ export async function sendUserCompletions(options: SendCompletionOptions) {
     frequencyPenalty,
     presencePenalty,
   } = options;
+  const isSearchModel = webSearchModels.has(model);
   const handler = provider === "deepseek" ? deepseek : openai;
 
   const chatCompletion = await handler.chat.completions.create({
     messages: messages.slice(-maxMessages) as any,
     model,
     max_completion_tokens: Math.min(envMaxTokens, maxTokens),
-    temperature,
-    frequency_penalty: frequencyPenalty,
-    presence_penalty: presencePenalty,
+    // search model params has some different
+    ...(isSearchModel ? {
+      web_search_options: {
+        search_context_size: 'medium',
+      },
+    } : {
+      temperature,
+      frequency_penalty: frequencyPenalty,
+      presence_penalty: presencePenalty,
+    }),
   });
   return chatCompletion;
 }
@@ -55,7 +65,7 @@ export async function sendImageGenerate(options: SendImageGenerateOptions) {
 }
 
 interface Message {
-  role: string; // 'user' | 'system' | 'assistant'
+  role: string; // 'user' | 'developer' | 'assistant'
   content: string;
 }
 
