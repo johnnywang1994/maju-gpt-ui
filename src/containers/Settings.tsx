@@ -79,28 +79,20 @@ const chatModelOptions = {
   // https://platform.openai.com/docs/models/model-endpoint-compatibility
   [ModelProvider.OpenAI]: [
     {
-      label: "GPT-4o",
-      value: "gpt-4o",
-    },
-    {
       label: "GPT-4o mini",
       value: "gpt-4o-mini",
     },
     {
-      label: "o1",
-      value: "o1",
+      label: "GPT-4o",
+      value: "gpt-4o",
+    },
+    {
+      label: "o3 mini",
+      value: "o3-mini",
     },
     {
       label: "o1 mini",
       value: "o1-mini",
-    },
-    {
-      label: "GPT 4 Turbo(2024/04)",
-      value: "gpt-4-turbo",
-    },
-    {
-      label: "GPT 4(2021/09)",
-      value: "gpt-4",
     },
     {
       label: "GPT 3.5 Turbo(2021/09)",
