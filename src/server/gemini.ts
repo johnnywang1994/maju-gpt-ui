@@ -8,10 +8,10 @@ export async function sendGenerateContent(options: SendGenerateContentOptions) {
   }
   const genAI = new GoogleGenerativeAI(API_KEY);
   const model = genAI.getGenerativeModel({
-    model: options?.model ?? "gemini-1.5-flash",
+    model: options?.model ?? "gemini-2.0-flash",
     // systemInstruction: "You are a software engineer who is trying to debug a piece of code.",
     generationConfig: {
-      maxOutputTokens: options?.maxTokens ?? 2048,
+      maxOutputTokens: options?.maxTokens ?? 8192,
       temperature: options?.temperature ?? 0.7,
     },
   });
