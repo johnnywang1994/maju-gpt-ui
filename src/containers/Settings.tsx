@@ -79,6 +79,14 @@ const chatModelOptions = {
   // https://platform.openai.com/docs/models/model-endpoint-compatibility
   [ModelProvider.OpenAI]: [
     {
+      label: "GPT-4.1 mini",
+      value: "gpt-4.1-mini",
+    },
+    {
+      label: "GPT-4.1",
+      value: "gpt-4.1",
+    },
+    {
       label: "GPT-4o mini",
       value: "gpt-4o-mini",
     },
@@ -93,14 +101,6 @@ const chatModelOptions = {
     {
       label: "GPT-4o(search)",
       value: "gpt-4o-search-preview",
-    },
-    {
-      label: "o3 mini",
-      value: "o3-mini",
-    },
-    {
-      label: "o1 mini",
-      value: "o1-mini",
     },
     {
       label: "GPT 3.5 Turbo(2021/09)",
@@ -120,6 +120,14 @@ const chatModelOptions = {
   ],
   // https://ai.google.dev/gemini-api/docs/models/gemini?hl=zh-tw
   [ModelProvider.Gemini]: [
+    {
+      label: "Gemini 2.0 Flash",
+      value: "gemini-2.0-flash",
+    },
+    {
+      label: "Gemini 2.0 Flash Lite",
+      value: "gemini-2.0-flash-lite",
+    },
     {
       label: "Gemini 1.5 Flash",
       value: "gemini-1.5-flash",

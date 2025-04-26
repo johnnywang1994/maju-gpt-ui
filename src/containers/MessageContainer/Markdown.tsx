@@ -4,6 +4,10 @@ import React, { FC, PropsWithChildren, ReactElement } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism, SyntaxHighlighterProps } from "react-syntax-highlighter";
 import a11yDark from "react-syntax-highlighter/dist/cjs/styles/prism/a11y-dark";
+// transform markdown to html
+import rehypeRaw from "rehype-raw"
+// support table syntax
+import remarkGfm from "remark-gfm"
 import CopyButton from "./CopyButton";
 
 const SyntaxHighlighter = (Prism as unknown) as React.FC<SyntaxHighlighterProps>;
@@ -37,8 +41,8 @@ const Markdown: FC<MarkdownProps> = ({ content }) => {
   return (
     <ReactMarkdown
       className="chat-markdown"
-      rehypePlugins={[]}
-      remarkPlugins={[]}
+      rehypePlugins={[rehypeRaw]}
+      remarkPlugins={[remarkGfm]}
       components={{
         pre: (props) => <PreBlock {...props} />,
         code: CodeBlock,
