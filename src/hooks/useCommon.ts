@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { MAX_TOKENS } from "@/lib/env";
+import { ModelProvider } from "@/types/model";
 
 export enum PageTab {
   Chat = 'chat',
@@ -7,16 +8,10 @@ export enum PageTab {
 }
 
 export enum DefaultModel {
-  Chat = 'gpt-4o-mini',
+  Chat = 'gpt-4.1-mini',
   DeepSeekChat = 'deepseek-chat',
-  GeminiChat = 'gemini-1.5-flash',
+  GeminiChat = 'gemini-2.0-flash',
   Image = 'dall-e-3'
-}
-
-export enum ModelProvider {
-  OpenAI = 'openai',
-  DeepSeek = 'deepseek',
-  Gemini = 'gemini',
 }
 
 interface Settings {
@@ -51,6 +46,7 @@ interface StoreUtil {
   toggleDrawer: (bool?: boolean) => void;
   toggleSetting: (bool?: boolean) => void;
   setSettings: (newSettings: Partial<Settings>) => void;
+  initialSetup: () => void;
 }
 
 export const localSettingKey = "maju-gpt_settings";
@@ -121,6 +117,26 @@ const useCommon = create<StoreUtil>((set, get) => ({
     });
     localStorage.setItem(localSettingKey, JSON.stringify(replaceSettings));
   },
+
+  initialSetup() {
+    const localSettings = window.localStorage.getItem(localSettingKey);
+    console.log('initialSetup', localSettings);
+    if (localSettings) {
+      const parsedSettings = JSON.parse(localSettings);
+      // OpenAI Image model should be reset to default Chat model
+      if (parsedSettings.model && parsedSettings.model.startsWith('dall-e')) {
+        parsedSettings.model = DefaultModel.Chat;
+      }
+      set({
+        settings: {
+          ...get().settings,
+          ...parsedSettings,
+        },
+      });
+    }
+  }
 }));
+
+useCommon.getState().initialSetup();
 
 export default useCommon;

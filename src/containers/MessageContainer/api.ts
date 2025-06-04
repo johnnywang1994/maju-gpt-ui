@@ -1,7 +1,8 @@
 "use client";
 import { SendMessage } from "@/types/message";
 import { snakifyKeys } from "@/lib/common";
-import { PageTab, ModelProvider } from "@/hooks/useCommon";
+import { PageTab } from "@/hooks/useCommon";
+import { ModelProvider } from "@/types/model";
 
 interface SendUserCompletionsOptions {
   messages: SendMessage[];

@@ -8,6 +8,7 @@ const withBundleAnalyzer = NextBundleAnalyzer({
 });
 
 const nextConfig = {
+  reactStrictMode: false,
   output: isStatic ? 'export' : undefined,
   webpack: config => {
     if (!isStatic || !config.module) {

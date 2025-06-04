@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useState, useMemo, useEffect, use } from "react";
+import { FC, PropsWithChildren, useState, useMemo, useEffect } from "react";
 import {
   Space,
   Form,
@@ -11,10 +11,11 @@ import {
 } from "antd";
 import { Icon } from "@iconify/react";
 
-import useCommon, { DefaultModel, ModelProvider, PageTab, localSettingKey } from "@/hooks/useCommon";
+import useCommon, { DefaultModel, PageTab } from "@/hooks/useCommon";
 import useUpdate from '@/hooks/useUpdate';
 import usePrevious from "@/hooks/usePrevious";
 import { MAX_TOKENS, MODE } from "@/lib/env";
+import { ModelProvider } from "@/types/model";
 
 const isStatic = MODE === "static";
 
@@ -154,27 +155,7 @@ const dall2SizeOptions = ['256x256', '512x512', '1024x1024'];
 const dall3SizeOptions = ['1024x1024', '1792x1024', '1024x1792'];
 
 const Settings: FC<Props> = () => {
-  const [form] = Form.useForm();
-  const watchProvider: ModelProvider = Form.useWatch(FieldNames.Provider, form);
-  const watchModel = Form.useWatch(FieldNames.Model, form);
-  const watchMaxTokens = Form.useWatch(FieldNames.MaxTokens, form);
-  const watchFrequencyPenalty = Form.useWatch(
-    FieldNames.FrequencyPenalty,
-    form
-  );
-  const watchPresencePenalty = Form.useWatch(
-    FieldNames.PresencePenalty,
-    form
-  );
-
   const { settings, pageTab, computed, setSettings, toggleSetting } = useCommon();
-  const prevPageTab = usePrevious(pageTab, (prev, curr) => prev === curr);
-  const [openPreviewModal, setPreviewModal] = useState(false);
-
-  const modelOptions = pageTab === PageTab.Chat ? chatModelOptions[watchProvider] : imageModelOptions;
-
-  const sizeOptions = (watchModel === 'dall-e-3' ? dall3SizeOptions : dall2SizeOptions).map((v) => ({ label: v, value: v }));
-
   const initialValue = useMemo(
     () => ({
       [FieldNames.Username]: settings.username,
@@ -193,6 +174,28 @@ const Settings: FC<Props> = () => {
     }),
     [settings]
   );
+
+  const [form] = Form.useForm();
+
+  // watch form values will be undefined in first render
+  const watchProvider: ModelProvider = Form.useWatch(FieldNames.Provider, form) ?? initialValue[FieldNames.Provider];
+  const watchModel = Form.useWatch(FieldNames.Model, form) ?? initialValue[FieldNames.Model];
+  const watchMaxTokens = Form.useWatch(FieldNames.MaxTokens, form) ?? initialValue[FieldNames.MaxTokens];
+  const watchFrequencyPenalty = Form.useWatch(
+    FieldNames.FrequencyPenalty,
+    form
+  ) ?? initialValue[FieldNames.FrequencyPenalty];
+  const watchPresencePenalty = Form.useWatch(
+    FieldNames.PresencePenalty,
+    form
+  ) ?? initialValue[FieldNames.PresencePenalty];
+
+  const prevPageTab = usePrevious(pageTab, (prev, curr) => prev === curr);
+  const [openPreviewModal, setPreviewModal] = useState(false);
+
+  const modelOptions = pageTab === PageTab.Chat ? chatModelOptions[watchProvider] : imageModelOptions;
+
+  const sizeOptions = (watchModel === 'dall-e-3' ? dall3SizeOptions : dall2SizeOptions).map((v) => ({ label: v, value: v }));
 
   const handleSubmit = (values: Record<FieldNames, any>) => {
     values.maxTokens = Number(values.maxTokens);
@@ -240,41 +243,26 @@ const Settings: FC<Props> = () => {
     if (prevPageTab === pageTab) return;
     switch (pageTab) {
       case PageTab.Chat:
-        const values = {
+        const chatValues = {
           [FieldNames.Provider]: ModelProvider.OpenAI,
           [FieldNames.Model]: DefaultModel.Chat,
         };
-        form.setFieldsValue(values);
-        setSettings(values);
+        form.setFieldsValue(chatValues);
+        setSettings(chatValues);
         break;
       case PageTab.Image:
         // OpenAI support Image tab
-        if (settings.provider !== ModelProvider.OpenAI) {
-          const values = {
-            [FieldNames.Provider]: ModelProvider.OpenAI,
-            [FieldNames.Model]: DefaultModel.Image,
-          };
-          form.setFieldsValue(values);
-          setSettings(values);
-          break;
-        }
+        const ImageValues = {
+          [FieldNames.Provider]: ModelProvider.OpenAI,
+          [FieldNames.Model]: DefaultModel.Image,
+        };
+        form.setFieldsValue(ImageValues);
+        setSettings(ImageValues);
         break;
       default:
         break;
     }
   }, [form, prevPageTab, pageTab]);
-
-  // init settings by local cache
-  useEffect(() => {
-    const prevSettingsRaw = localStorage.getItem(localSettingKey);
-    if (!!prevSettingsRaw) {
-      const prevSettings = JSON.parse(prevSettingsRaw);
-      try {
-        setSettings(prevSettings);
-        form.setFieldsValue(prevSettings);
-      } catch {}
-    }
-  }, [setSettings]);
 
   return (
     <div className="text-white">

@@ -4,6 +4,7 @@ import { verifyAccessToken, channelId } from "@/server/line";
 import { success, failed } from "@/server/response";
 import { random } from "@/lib/random";
 import { RoleType } from "@/types/message";
+import { ModelProvider } from "@/types/model";
 
 const enableAuth = process.env.NEXT_PUBLIC_ENABLE_AUTH === "true";
 
@@ -45,11 +46,11 @@ const wrapGeminiGenerate = async (options: SendCompletionOptions) => {
 // openai, deepseek, gemini
 const getSendMessageHandler = async (provider: string) => {
   switch (provider) {
-    case "openai":
+    case ModelProvider.OpenAI:
       return sendUserCompletions;
-    case "deepseek":
+    case ModelProvider.DeepSeek:
       return sendUserCompletions;
-    case "gemini":
+    case ModelProvider.Gemini:
       return wrapGeminiGenerate;
     default:
       return sendUserCompletions;
