@@ -25,10 +25,12 @@ const App: FC<Props> = ({ children }) => {
     toggleSetting,
     setApiKey,
     setApiKeyModal,
+    initialSetup
   } = useCommon();
   const { initialize: initializeTheme } = useAntConfig();
 
   useEffect(() => {
+    initialSetup();
     initialize();
     initializeTheme();
     if (isStatic) {

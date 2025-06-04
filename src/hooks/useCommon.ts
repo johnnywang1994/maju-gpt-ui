@@ -137,6 +137,4 @@ const useCommon = create<StoreUtil>((set, get) => ({
   }
 }));
 
-useCommon.getState().initialSetup();
-
 export default useCommon;
