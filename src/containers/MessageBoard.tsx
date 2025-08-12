@@ -12,7 +12,7 @@ import { MAX_MESSAGES, MODE } from "@/lib/env";
 
 const isStatic = MODE === "static";
 
-const validImageModels = ['dall-e-2', 'dall-e-3'];
+const validImageModels = ['dall-e-2', 'dall-e-3', 'gpt-image-1'];
 
 const MessageBoard: FC = () => {
   const ref = useRef(null);
