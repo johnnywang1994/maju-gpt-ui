@@ -3,13 +3,13 @@ import { create } from "zustand";
 
 import { random } from "@/lib/random";
 // import { mockMessages } from '@/lib/mock';
-import { Message, RoleType, Room } from "@/types/message";
+import { Message, RoleType, Room, ContentObject } from "@/types/message";
 
 type AddMessagePayload = {
   id?: string;
   sentTime?: number;
   role: RoleType;
-  content: string;
+  content: string | ContentObject[];
 };
 
 interface StoreUtil {

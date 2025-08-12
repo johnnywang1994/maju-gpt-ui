@@ -104,8 +104,12 @@ const chatModelOptions = {
       value: "gpt-4o-search-preview",
     },
     {
-      label: "GPT 3.5 Turbo(2021/09)",
-      value: "gpt-3.5-turbo",
+      label: "GPT-5",
+      value: "gpt-5",
+    },
+    {
+      label: "GPT-5 mini",
+      value: "gpt-5-mini",
     },
   ],
   // https://api-docs.deepseek.com/zh-cn/
@@ -122,20 +126,20 @@ const chatModelOptions = {
   // https://ai.google.dev/gemini-api/docs/models/gemini?hl=zh-tw
   [ModelProvider.Gemini]: [
     {
+      label: "Gemini 2.5 Flash",
+      value: "gemini-2.5-flash",
+    },
+    {
+      label: "Gemini 2.5 Flash Lite",
+      value: "gemini-2.5-flash-lite",
+    },
+    {
       label: "Gemini 2.0 Flash",
       value: "gemini-2.0-flash",
     },
     {
       label: "Gemini 2.0 Flash Lite",
       value: "gemini-2.0-flash-lite",
-    },
-    {
-      label: "Gemini 1.5 Flash",
-      value: "gemini-1.5-flash",
-    },
-    {
-      label: "Gemini 1.5 Flash 8B(small task)",
-      value: "gemini-1.5-flash-8b",
     },
   ],
 }
@@ -148,6 +152,10 @@ const imageModelOptions = [
   {
     label: "DALL·E 2",
     value: "dall-e-2",
+  },
+  {
+    label: "GPT Image 1",
+    value: "gpt-image-1", // expensive, not recommended for daily use
   }
 ];
 

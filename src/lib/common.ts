@@ -17,3 +17,13 @@ export const snakifyKeys = (obj: Record<string, any>) => {
   }
   return obj;
 };
+
+export function encodeImageFileAsURL(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = function() {
+      resolve(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  });
+}

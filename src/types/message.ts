@@ -4,16 +4,25 @@ export enum RoleType {
   SYSTEM = "system",
 }
 
+export type ContentObject = {
+  type: string; // e.g. "text", "image_url", "input_audio"
+  text?: string;
+  image_url?: {
+    url: string;
+    detail: string; // e.g. "low", "high"
+  };
+}
+
 export type Message = {
   role: RoleType;
-  content: string;
+  content: string | ContentObject[];
   id: string;
   sentTime: number; // date
 };
 
 export type SendMessage = {
   role: RoleType;
-  content: string;
+  content: string | ContentObject[];
 };
 
 export type GPTChoice = {

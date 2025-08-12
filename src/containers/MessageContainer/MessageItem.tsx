@@ -5,7 +5,7 @@ import clsx from "clsx";
 
 import Markdown from "@/containers/MessageContainer/Markdown";
 import CopyButton from "./CopyButton";
-import { Message, RoleType } from "@/types/message";
+import { Message, RoleType, ContentObject } from "@/types/message";
 
 interface Props {
   names: {
@@ -15,6 +15,28 @@ interface Props {
   message: Message;
   onDelete?: () => void;
 }
+
+const renderContent = (content: string | ContentObject[], isGPT: boolean) => {
+  if (Array.isArray(content)) {
+    return (
+      <>
+        {content.map((item, index) => (
+          <div key={index}>
+            {item.type === "text" ? (
+              <Markdown content={item.text ?? ''} />
+            ) : item.type === "image_url" ? (
+              <img className="max-w-[350px]" src={item.image_url?.url} alt="Image is deleted." />
+            ) : null}
+          </div>
+        ))}
+      </>
+    )
+  }
+  if (isGPT && content.startsWith('https://')) {
+    return <img className="max-w-[350px]" src={content} alt="Image is deleted." />;
+  }
+  return <Markdown content={content} />;
+};
 
 const MessageItem: FC<Props> = ({ names, message, onDelete }) => {
   const { content, role } = message;
@@ -35,22 +57,14 @@ const MessageItem: FC<Props> = ({ names, message, onDelete }) => {
       <div className="pl-10 dark:text-gray-100">
         <h4>{isGPT ? names.assistant : names.user}</h4>
         <div>
-          {
-            isGPT && content.startsWith('https://')
-              ? <img
-                  className="max-w-[500px]"
-                  src={content}
-                  alt="Image is deleted."
-                />
-              : <Markdown content={content} />
-          }
+          {renderContent(content, isGPT)}
         </div>
         {/* actions */}
         <div className="absolute right-0 top-0">
           <Space>
             {isGPT && (
               <div className="w-7 h-7 rounded-md inline-flex items-center justify-center bg-gray-400 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-500 cursor-pointer">
-                <CopyButton text={content} />
+                <CopyButton text={content as string} />
               </div>
             )}
             <Popconfirm

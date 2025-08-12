@@ -18,6 +18,17 @@ interface Props {
   onSendRequest: (message: SendMessage) => Promise<RawGPTMessage | void>;
 }
 
+const contentWithImages = (input: string, imageUrls: string[]) => ([{
+  type: "text",
+  text: input,
+}, ...imageUrls.map(url => ({
+  type: "image_url",
+  image_url: {
+    url,
+    detail: "low"
+  }
+}))]);
+
 const MessageContainer: FC<Props> = ({
   names,
   minLength = 8,
@@ -27,7 +38,7 @@ const MessageContainer: FC<Props> = ({
     useMessages();
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (input: string) => {
+  const handleSubmit = async (input: string, imageUrls: string[]) => {
     // prevent user from mistakenly send message
     if (input.length < minLength) {
       message.info(
@@ -38,7 +49,7 @@ const MessageContainer: FC<Props> = ({
     // add user question
     const newUserMessage = {
       role: RoleType.USER,
-      content: input,
+      content: imageUrls.length > 0 ? contentWithImages(input, imageUrls) : input,
     };
     addMessage(newUserMessage);
     setLoading(true);
