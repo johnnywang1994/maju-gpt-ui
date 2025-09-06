@@ -32,7 +32,7 @@ const renderContent = (content: string | ContentObject[], isGPT: boolean) => {
       </>
     )
   }
-  if (isGPT && content.startsWith('https://')) {
+  if (isGPT && (content.startsWith('https://') || content.startsWith('data:image/'))) {
     return <img className="max-w-[350px]" src={content} alt="Image is deleted." />;
   }
   return <Markdown content={content} />;

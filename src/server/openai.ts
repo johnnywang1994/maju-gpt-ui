@@ -61,6 +61,7 @@ export async function sendImageGenerate(options: SendImageGenerateOptions) {
     n: 1,
     size: size as any,
   });
+  console.log(imageGeneratedRes);
   return imageGeneratedRes;
 }
 

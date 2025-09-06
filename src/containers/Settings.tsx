@@ -17,6 +17,7 @@ import usePrevious from "@/hooks/usePrevious";
 import { MAX_TOKENS, MODE } from "@/lib/env";
 import { ModelProvider } from "@/types/model";
 
+
 const isStatic = MODE === "static";
 
 interface Props extends PropsWithChildren {}
@@ -144,8 +145,8 @@ const chatModelOptions = {
   ],
 }
 
-const imageModelOptions = [
-  {
+const imageModelOptions = {
+  [ModelProvider.OpenAI]: [{
     label: "DALL·E 3",
     value: "dall-e-3",
   },
@@ -156,8 +157,13 @@ const imageModelOptions = [
   {
     label: "GPT Image 1",
     value: "gpt-image-1", // expensive, not recommended for daily use
-  }
-];
+  }],
+  [ModelProvider.Gemini]: [{
+    label: "Gemini 2.5 Image Preview",
+    value: "gemini-2.5-flash-image-preview",
+  }],
+  [ModelProvider.DeepSeek]: [],
+}
 
 const dall2SizeOptions = ['256x256', '512x512', '1024x1024'];
 const dall3SizeOptions = ['1024x1024', '1792x1024', '1024x1792'];
@@ -201,7 +207,7 @@ const Settings: FC<Props> = () => {
   const prevPageTab = usePrevious(pageTab, (prev, curr) => prev === curr);
   const [openPreviewModal, setPreviewModal] = useState(false);
 
-  const modelOptions = pageTab === PageTab.Chat ? chatModelOptions[watchProvider] : imageModelOptions;
+  const modelOptions = pageTab === PageTab.Chat ? chatModelOptions[watchProvider] : imageModelOptions[watchProvider];
 
   const sizeOptions = (watchModel === 'dall-e-3' ? dall3SizeOptions : dall2SizeOptions).map((v) => ({ label: v, value: v }));
 

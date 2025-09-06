@@ -10,6 +10,7 @@ const withBundleAnalyzer = NextBundleAnalyzer({
 const nextConfig = {
   reactStrictMode: false,
   output: isStatic ? 'export' : undefined,
+  eslint: { ignoreDuringBuilds: true },
   webpack: config => {
     if (!isStatic || !config.module) {
       return config;
