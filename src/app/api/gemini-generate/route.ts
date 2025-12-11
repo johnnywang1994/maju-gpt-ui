@@ -15,6 +15,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const {
+      model,
       token,
       prompt,
       temperature,
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
       if (!isValid) return failed(403);
     }
     const result = await sendGenerateContent({
+      model,
       prompt,
       temperature,
       maxTokens,

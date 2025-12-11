@@ -28,7 +28,7 @@ export async function sendGenerateContent(options: SendGenerateContentOptions) {
   }
   
   const response = await ai.models.generateContent({
-    model: options?.model ?? "gemini-2.0-flash",
+    model: options?.model ?? "gemini-2.5-flash",
     contents: parseGeminiContents(options.prompt),
     config: {
       // candidateCount: 1,
