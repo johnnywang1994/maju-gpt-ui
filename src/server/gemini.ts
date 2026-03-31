@@ -26,9 +26,9 @@ export async function sendGenerateContent(options: SendGenerateContentOptions) {
   if (!API_KEY) {
     throw Error('env "GEMINI_API_KEY" is not set');
   }
-  
+
   const response = await ai.models.generateContent({
-    model: options?.model ?? "gemini-2.5-flash",
+    model: options?.model ?? "gemini-3.1-flash-lite-preview",
     contents: parseGeminiContents(options.prompt),
     config: {
       // candidateCount: 1,

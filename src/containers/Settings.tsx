@@ -135,12 +135,12 @@ const chatModelOptions = {
       value: "gemini-2.5-flash-lite",
     },
     {
-      label: "Gemini 2.0 Flash",
-      value: "gemini-2.0-flash",
+      label: "Gemini 3 Flash Preview",
+      value: "gemini-3-flash-preview",
     },
     {
-      label: "Gemini 2.0 Flash Lite",
-      value: "gemini-2.0-flash-lite",
+      label: "Gemini 3.1 Flash Lite Preview",
+      value: "gemini-3.1-flash-lite-preview",
     },
   ],
 }
