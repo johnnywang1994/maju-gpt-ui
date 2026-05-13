@@ -16,7 +16,7 @@ const envMaxTokens =
 
 const maxMessages = Number(process.env.NEXT_PUBLIC_OPENAI_MAX_MESSAGES) || 8;
 
-const webSearchModels = new Set(['gpt-4o-mini-search-preview', 'gpt-4o-search-preview']);
+const webSearchModels = new Set(['gpt-5-search-api']);
 
 export async function sendUserCompletions(options: SendCompletionOptions) {
   const {
@@ -61,8 +61,12 @@ export async function sendImageGenerate(options: SendImageGenerateOptions) {
     n: 1,
     size: size as any,
   });
-  console.log(imageGeneratedRes);
-  return imageGeneratedRes;
+  // Normalize: new GPT Image models return b64_json instead of url
+  const data = imageGeneratedRes.data?.map(item => ({
+    ...item,
+    url: item.url ?? (item.b64_json ? `data:image/png;base64,${item.b64_json}` : undefined),
+  }));
+  return { ...imageGeneratedRes, data };
 }
 
 interface Message {

@@ -81,36 +81,28 @@ const chatModelOptions = {
   // https://platform.openai.com/docs/models/model-endpoint-compatibility
   [ModelProvider.OpenAI]: [
     {
-      label: "GPT-4.1 mini",
-      value: "gpt-4.1-mini",
+      label: "GPT-5.5",
+      value: "gpt-5.5",
+    },
+    {
+      label: "GPT-5.4",
+      value: "gpt-5.4",
+    },
+    {
+      label: "GPT-5.4 mini",
+      value: "gpt-5.4-mini",
     },
     {
       label: "GPT-4.1",
       value: "gpt-4.1",
     },
     {
-      label: "GPT-4o mini",
-      value: "gpt-4o-mini",
-    },
-    {
       label: "GPT-4o",
       value: "gpt-4o",
     },
     {
-      label: "GPT-4o mini(search)",
-      value: "gpt-4o-mini-search-preview",
-    },
-    {
-      label: "GPT-4o(search)",
-      value: "gpt-4o-search-preview",
-    },
-    {
-      label: "GPT-5",
-      value: "gpt-5",
-    },
-    {
-      label: "GPT-5 mini",
-      value: "gpt-5-mini",
+      label: "GPT-5 Search",
+      value: "gpt-5-search-api",
     },
   ],
   // https://api-docs.deepseek.com/zh-cn/
@@ -135,38 +127,48 @@ const chatModelOptions = {
       value: "gemini-2.5-flash-lite",
     },
     {
-      label: "Gemini 3 Flash Preview",
-      value: "gemini-3-flash-preview",
-    },
-    {
-      label: "Gemini 3.1 Flash Lite Preview",
-      value: "gemini-3.1-flash-lite-preview",
+      label: "Gemini 3.1 Flash Lite",
+      value: "gemini-3.1-flash-lite",
     },
   ],
 }
 
 const imageModelOptions = {
-  [ModelProvider.OpenAI]: [{
-    label: "DALL·E 3",
-    value: "dall-e-3",
-  },
-  {
-    label: "DALL·E 2",
-    value: "dall-e-2",
-  },
-  {
-    label: "GPT Image 1",
-    value: "gpt-image-1", // expensive, not recommended for daily use
-  }],
+  [ModelProvider.OpenAI]: [
+    {
+      label: "GPT Image 2",
+      value: "gpt-image-2",
+    },
+    {
+      label: "GPT Image 1.5",
+      value: "gpt-image-1.5",
+    },
+    {
+      label: "GPT Image 1",
+      value: "gpt-image-1",
+    },
+    {
+      label: "GPT Image 1 Mini",
+      value: "gpt-image-1-mini",
+    },
+  ],
   [ModelProvider.Gemini]: [{
-    label: "Gemini 2.5 Image Preview",
-    value: "gemini-2.5-flash-image-preview",
+    label: "Gemini 3.1 Image",
+    value: "gemini-3.1-flash-image",
   }],
   [ModelProvider.DeepSeek]: [],
 }
 
-const dall2SizeOptions = ['256x256', '512x512', '1024x1024'];
-const dall3SizeOptions = ['1024x1024', '1792x1024', '1024x1792'];
+const gptImageSizeOptions = [
+  'auto',
+  '1024x1024',
+  '1536x1024',
+  '1024x1536',
+  '2048x2048',
+  '2048x1152',
+  '3840x2160',
+  '2160x3840'
+];
 
 const Settings: FC<Props> = () => {
   const { settings, pageTab, computed, setSettings, toggleSetting } = useCommon();
@@ -209,7 +211,9 @@ const Settings: FC<Props> = () => {
 
   const modelOptions = pageTab === PageTab.Chat ? chatModelOptions[watchProvider] : imageModelOptions[watchProvider];
 
-  const sizeOptions = (watchModel === 'dall-e-3' ? dall3SizeOptions : dall2SizeOptions).map((v) => ({ label: v, value: v }));
+  const sizeOptions = (watchProvider === ModelProvider.OpenAI ? gptImageSizeOptions.map(v => ({ label: v, value: v })) : [
+    { label: "1024x1024", value: "1024x1024" }
+  ]);
 
   const handleSubmit = (values: Record<FieldNames, any>) => {
     values.maxTokens = Number(values.maxTokens);

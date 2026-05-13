@@ -170,10 +170,11 @@ export function parseChatMessage(rawMessage: any): Message {
 }
 
 export function parseImageMessage(rawMessage: any): Message {
+  const url = rawMessage.url ?? (rawMessage.b64_json ? `data:image/png;base64,${rawMessage.b64_json}` : '');
   return {
     id: random(),
     role: RoleType.GPT,
-    content: rawMessage.url,
+    content: url,
     sentTime: Date.now(),
   };
 }

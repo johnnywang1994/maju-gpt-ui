@@ -8,10 +8,10 @@ export enum PageTab {
 }
 
 export enum DefaultModel {
-  Chat = 'gpt-4.1-mini',
+  Chat = 'gpt-5.4-mini',
   DeepSeekChat = 'deepseek-chat',
-  GeminiChat = 'gemini-3.1-flash-lite-preview',
-  Image = 'dall-e-3'
+  GeminiChat = 'gemini-3.1-flash-lite',
+  Image = 'gpt-image-1-mini'
 }
 
 interface Settings {
