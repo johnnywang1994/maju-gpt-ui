@@ -4,11 +4,6 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const deepseek = new OpenAI({
-  baseURL: "https://api.deepseek.com",
-  apiKey: process.env.DEEPSEEK_API_KEY,
-});
-
 export default openai;
 
 const envMaxTokens =
@@ -16,37 +11,38 @@ const envMaxTokens =
 
 const maxMessages = Number(process.env.NEXT_PUBLIC_OPENAI_MAX_MESSAGES) || 8;
 
-const webSearchModels = new Set(['gpt-5-search-api']);
+export async function sendResponsesSearch(options: SendResponsesOptions) {
+  const { messages, model, maxTokens, enableWebSearch, temperature } = options;
 
-export async function sendUserCompletions(options: SendCompletionOptions) {
-  const {
-    messages,
-    temperature,
-    maxTokens,
-    provider,
+  const response = await openai.responses.create({
     model,
-    frequencyPenalty,
-    presencePenalty,
-  } = options;
-  const isSearchModel = webSearchModels.has(model);
-  const handler = provider === "deepseek" ? deepseek : openai;
-
-  const chatCompletion = await handler.chat.completions.create({
-    messages: messages.slice(-maxMessages) as any,
-    model,
-    max_completion_tokens: Math.min(envMaxTokens, maxTokens),
-    // search model params has some different
-    ...(isSearchModel ? {
-      web_search_options: {
-        search_context_size: 'medium',
-      },
-    } : {
-      temperature,
-      frequency_penalty: frequencyPenalty,
-      presence_penalty: presencePenalty,
-    }),
+    input: messages.slice(-maxMessages) as any,
+    max_output_tokens: Math.min(envMaxTokens, maxTokens),
+    ...(temperature !== undefined ? { temperature } : {}),
+    ...(enableWebSearch ? { tools: [{ type: "web_search_preview" }] } : {}),
   });
-  return chatCompletion;
+
+  // Normalize Responses API output to chat completion format
+  const messageOutput = response.output.find((item) => item.type === 'message') as any;
+  const textContent = messageOutput?.content?.find((c: any) => c.type === 'output_text');
+
+  return {
+    id: response.id,
+    object: 'chat.completion',
+    created: response.created_at,
+    model: response.model,
+    choices: [
+      {
+        finish_reason: 'stop',
+        index: 0,
+        logprobs: null,
+        message: {
+          role: 'assistant',
+          content: textContent?.text ?? '',
+        },
+      },
+    ],
+  };
 }
 
 export async function sendImageGenerate(options: SendImageGenerateOptions) {
@@ -74,18 +70,16 @@ interface Message {
   content: string;
 }
 
-export interface SendCompletionOptions {
-  provider: string; // 'openai' | 'deepseek'
-  messages: Message[];
-  temperature: number;
-  maxTokens: number;
-  model: string;
-  frequencyPenalty: number;
-  presencePenalty: number;
-}
-
 interface SendImageGenerateOptions {
   prompt: string;
   model: string;
   size: string;
+}
+
+export interface SendResponsesOptions {
+  messages: Message[];
+  maxTokens: number;
+  model: string;
+  enableWebSearch?: boolean;
+  temperature?: number;
 }

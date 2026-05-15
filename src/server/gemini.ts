@@ -31,10 +31,9 @@ export async function sendGenerateContent(options: SendGenerateContentOptions) {
     model: options?.model ?? "gemini-3.1-flash-lite",
     contents: parseGeminiContents(options.prompt),
     config: {
-      // candidateCount: 1,
-      // systemInstruction: "You are a software engineer who is trying to debug a piece of code.",
       maxOutputTokens: options?.maxTokens ?? 8192,
       temperature: options?.temperature ?? 0.7,
+      ...(options.enableWebSearch ? { tools: [{ googleSearch: {} }] } : {}),
     },
   });
 
@@ -43,7 +42,7 @@ export async function sendGenerateContent(options: SendGenerateContentOptions) {
 
 export async function sendImageGenerate(options: SendImageGenerateOptions) {
   const response = await ai.models.generateContent({
-    model: options.model ?? "gemini-2.5-flash-image-preview",
+    model: options.model ?? "gemini-2.5-flash-image",
     contents: options.prompt,
   })
 
@@ -70,6 +69,7 @@ interface SendGenerateContentOptions {
   model?: string;
   temperature?: number;
   maxTokens?: number;
+  enableWebSearch?: boolean;
 }
 
 interface SendImageGenerateOptions {

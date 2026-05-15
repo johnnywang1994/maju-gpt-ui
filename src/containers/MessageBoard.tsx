@@ -13,13 +13,12 @@ import { MAX_MESSAGES, MODE } from "@/lib/env";
 const isStatic = MODE === "static";
 
 const validImageModels = [
-  'dall-e-2',
-  'dall-e-3',
   'gpt-image-1',
   'gpt-image-1.5',
   'gpt-image-2',
   'gpt-image-1-mini',
-  'gemini-3.1-flash-image'
+  'gemini-3.1-flash-image-preview',
+  'gemini-2.5-flash-image',
 ];
 
 const MessageBoard: FC = () => {
@@ -85,6 +84,7 @@ const MessageBoard: FC = () => {
         model: settings.model,
         frequencyPenalty: settings.frequencyPenalty,
         presencePenalty: settings.presencePenalty,
+        enableWebSearch: settings.enableWebSearch,
       } : {
         provider: settings.provider,
         token: accessToken,

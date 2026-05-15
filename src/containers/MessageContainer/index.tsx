@@ -55,6 +55,9 @@ const MessageContainer: FC<Props> = ({
     setLoading(true);
     try {
       const res = (await onSendRequest(newUserMessage) as any);
+      if (!res) {
+        throw Error('No response from API');
+      }
       if (res.tab === PageTab.Chat) {
         // chat message
         addMessage(parseChatMessage(res?.id ? res : res.data));

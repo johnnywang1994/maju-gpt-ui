@@ -33,6 +33,7 @@ export enum FieldNames {
   FrequencyPenalty = "frequencyPenalty",
   PresencePenalty = "presencePenalty",
   EnableSystemPrompt = "enableSystemPrompt",
+  EnableWebSearch = "enableWebSearch",
   Role = "role",
   GoodAt = "goodAt",
   Topics = "topics",
@@ -68,10 +69,6 @@ const chatModelProviderOptions = [
     value: ModelProvider.OpenAI
   },
   {
-    label: 'DeepSeek',
-    value: ModelProvider.DeepSeek
-  },
-  {
     label: 'Gemini',
     value: ModelProvider.Gemini
   }
@@ -103,17 +100,6 @@ const chatModelOptions = {
     {
       label: "GPT-5 Search",
       value: "gpt-5-search-api",
-    },
-  ],
-  // https://api-docs.deepseek.com/zh-cn/
-  [ModelProvider.DeepSeek]: [
-    {
-      label: "DeepSeek Chat",
-      value: "deepseek-chat",
-    },
-    {
-      label: "DeepSeek R1",
-      value: "deepseek-reasoner",
     },
   ],
   // https://ai.google.dev/gemini-api/docs/models/gemini?hl=zh-tw
@@ -153,10 +139,12 @@ const imageModelOptions = {
     },
   ],
   [ModelProvider.Gemini]: [{
-    label: "Gemini 3.1 Image",
-    value: "gemini-3.1-flash-image",
+    label: "Gemini 3.1 Image Preview",
+    value: "gemini-3.1-flash-image-preview",
+  }, {
+    label: "Gemini 2.5 Image",
+    value: "gemini-2.5-flash-image",
   }],
-  [ModelProvider.DeepSeek]: [],
 }
 
 const gptImageSizeOptions = [
@@ -184,6 +172,7 @@ const Settings: FC<Props> = () => {
       [FieldNames.FrequencyPenalty]: settings.frequencyPenalty,
       [FieldNames.PresencePenalty]: settings.presencePenalty,
       [FieldNames.EnableSystemPrompt]: settings.enableSystemPrompt,
+      [FieldNames.EnableWebSearch]: settings.enableWebSearch,
       [FieldNames.Role]: settings.role,
       [FieldNames.GoodAt]: settings.goodAt,
       [FieldNames.Topics]: settings.topics,
@@ -239,18 +228,26 @@ const Settings: FC<Props> = () => {
 
   // reset model value when changing provider
   useUpdate(() => {
-    switch (watchProvider) {
-      case ModelProvider.OpenAI:
-        form.setFieldValue(FieldNames.Model, DefaultModel.Chat);
-        break;
-      case ModelProvider.DeepSeek:
-        form.setFieldValue(FieldNames.Model, DefaultModel.DeepSeekChat);
-        break;
-      case ModelProvider.Gemini:
-        form.setFieldValue(FieldNames.Model, DefaultModel.GeminiChat);
-        break;
-      default:
-        break;
+    if (pageTab === PageTab.Image) {
+      switch (watchProvider) {
+        case ModelProvider.OpenAI:
+          form.setFieldValue(FieldNames.Model, DefaultModel.Image);
+          break;
+        case ModelProvider.Gemini:
+          form.setFieldValue(FieldNames.Model, DefaultModel.GeminiImage);
+          break;
+      }
+    } else {
+      switch (watchProvider) {
+        case ModelProvider.OpenAI:
+          form.setFieldValue(FieldNames.Model, DefaultModel.Chat);
+          break;
+        case ModelProvider.Gemini:
+          form.setFieldValue(FieldNames.Model, DefaultModel.GeminiChat);
+          break;
+        default:
+          break;
+      }
     }
   }, [watchProvider]);
 
@@ -362,6 +359,16 @@ const Settings: FC<Props> = () => {
         >
           <Input type="number" min={-2} max={2} step={0.1} />
         </Form.Item>
+
+        {pageTab === PageTab.Chat && (watchProvider === ModelProvider.OpenAI || watchProvider === ModelProvider.Gemini) && (
+          <>
+            <h3 className="mb-4">Search</h3>
+            <Form.Item name={FieldNames.EnableWebSearch} label="" className="mb-0" valuePropName="checked">
+              <Switch checkedChildren="Web Search On" unCheckedChildren="Web Search Off" />
+            </Form.Item>
+            <p className="text-xs">*Use Web Search to get real-time information. (OpenAI: Responses API / Gemini: Google Search grounding)</p>
+          </>
+        )}
 
         <h3 className="mb-4">System Prompt</h3>
         <Form.Item

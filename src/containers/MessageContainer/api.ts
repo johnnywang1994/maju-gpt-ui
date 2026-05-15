@@ -14,6 +14,7 @@ interface SendUserCompletionsOptions {
   // https://platform.openai.com/docs/guides/text-generation/parameter-details
   frequencyPenalty?: number;
   presencePenalty?: number;
+  enableWebSearch?: boolean;
 }
 
 export async function sendUserCompletions(
@@ -23,27 +24,49 @@ export async function sendUserCompletions(
   let res: any;
   try {
     if (apiKey) {
-      const provider = options.provider;
       delete options["provider"];
       delete options["token"];
-      const baseURL = provider === ModelProvider.DeepSeek ? "https://api.deepseek.com" : "https://api.openai.com";
-      res = await fetch(`${baseURL}/v1/chat/completions`, {
+      const { messages, maxTokens, frequencyPenalty, presencePenalty, enableWebSearch, ...rest } = options as any;
+      res = await fetch(`https://api.openai.com/v1/responses`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
           Authorization: `Bearer ${apiKey}`,
         },
-        body: JSON.stringify(snakifyKeys(options)),
+        body: JSON.stringify(snakifyKeys({
+          ...rest,
+          input: messages,
+          maxOutputTokens: maxTokens,
+          ...(enableWebSearch ? { tools: [{ type: 'web_search_preview' }] } : {}),
+        })),
       });
+      const rawData = await res.json();
+      const messageOutput = rawData?.output?.find((item: any) => item.type === 'message');
+      const textContent = messageOutput?.content?.find((c: any) => c.type === 'output_text');
+      return {
+        id: rawData.id,
+        object: 'chat.completion',
+        created: rawData.created_at,
+        model: rawData.model,
+        choices: [{
+          finish_reason: 'stop',
+          index: 0,
+          logprobs: null,
+          message: {
+            role: 'assistant',
+            content: textContent?.text ?? '',
+          },
+        }],
+      };
     } else {
-      res = await fetch("/api/completions", {
+      res = await fetch("/api/responses", {
         method: "POST",
         body: JSON.stringify(options),
       });
+      const data = await res.json();
+      return data;
     }
-    const data = await res.json();
-    return data;
   } catch {
     return res;
   }

@@ -9,9 +9,9 @@ export enum PageTab {
 
 export enum DefaultModel {
   Chat = 'gpt-5.4-mini',
-  DeepSeekChat = 'deepseek-chat',
   GeminiChat = 'gemini-3.1-flash-lite',
-  Image = 'gpt-image-1-mini'
+  Image = 'gpt-image-1-mini',
+  GeminiImage = 'gemini-2.5-flash-image',
 }
 
 interface Settings {
@@ -25,6 +25,7 @@ interface Settings {
   frequencyPenalty: number;
   presencePenalty: number;
   enableSystemPrompt: boolean;
+  enableWebSearch: boolean;
   role: string;
   goodAt: string;
   topics: string;
@@ -69,6 +70,7 @@ const useCommon = create<StoreUtil>((set, get) => ({
     presencePenalty: 0,
     // system prompt
     enableSystemPrompt: false,
+    enableWebSearch: false,
     role: "Programmer",
     goodAt:
       "using Javascript, VueJs, ReactJs, NextJs to create website and CMS",
