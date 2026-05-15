@@ -20,6 +20,7 @@ export async function POST(request: Request) {
       prompt,
       temperature,
       maxTokens,
+      enableWebSearch,
     } = body;
     if (enableAuth) {
       if (!token) return failed(400);
@@ -31,6 +32,7 @@ export async function POST(request: Request) {
       prompt,
       temperature,
       maxTokens,
+      enableWebSearch,
     });
     return success({
       result,

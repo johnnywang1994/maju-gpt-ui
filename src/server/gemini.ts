@@ -31,7 +31,7 @@ export async function sendGenerateContent(options: SendGenerateContentOptions) {
     model: options?.model ?? "gemini-3.1-flash-lite",
     contents: parseGeminiContents(options.prompt),
     config: {
-      maxOutputTokens: options?.maxTokens ?? 8192,
+      maxOutputTokens: options?.maxTokens ?? 4096,
       temperature: options?.temperature ?? 0.7,
       ...(options.enableWebSearch ? { tools: [{ googleSearch: {} }] } : {}),
     },
