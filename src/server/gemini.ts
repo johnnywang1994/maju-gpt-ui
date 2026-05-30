@@ -17,6 +17,12 @@ function parseGeminiContents(contents: any) {
           data: item.image_url.url.split(',')[1],
         }
       }
+      if (item.type === 'audio_url') return {
+        inlineData: {
+          mimeType: item.audio_url.url.match(/audio\/[^;]+/)[0],
+          data: item.audio_url.url.split(',')[1],
+        }
+      }
     })
   }
   return contents
