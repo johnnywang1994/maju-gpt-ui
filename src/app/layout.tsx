@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-// prevent page flicker
-// https://ant.design/docs/react/use-with-next#using-app-router
-import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "@/styles/global.scss";
 
 export const metadata: Metadata = {
-  title: "Maju GPT UI",
+  title: "Maju Chat",
   description:
-    "Maju GPT UI is a simple UI for ChatGPT, integrated with LIFF login if you want. Chat data are stored in browser localStorage.",
+    "A CopilotKit chat interface backed by an OpenAI-compatible API.",
 };
 
 export default function RootLayout({
@@ -17,9 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <AntdRegistry>{children}</AntdRegistry>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

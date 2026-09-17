@@ -1,59 +1,56 @@
-# Maju GPT UI
+# Maju Chat
 
-This is a simple UI for ChatGPT, integrated with LIFF login if you want. Chat data are stored in browser localStorage.
-
+Maju Chat is a CopilotKit v2 chat UI backed by a Next.js AG-UI endpoint. The server uses the OpenAI SDK against any OpenAI-compatible provider, including OpenRouter. Chat history is stored in browser localStorage.
 
 ## Getting Started
-1. create an env file
-```bash
-# server side
-OPENAI_API_KEY= #optional if mode is host
-DEEPSEEK_API_KEY= #optional if you want to support provider Deepseek
-LINE_CHANNEL_ID= #optional if enable liff auth
-NODE_TLS_REJECT_UNAUTHORIZED=0 #optional for gemini api route
-GEMINI_API_KEY= #optional for gemini api route and provider Gemini
-GEMINI_API_AUTH_TOKEN= #optional for gemini api route
 
-# client side
-NEXT_PUBLIC_MODE=host # static or host
-NEXT_PUBLIC_ENABLE_AUTH=false #optional
-NEXT_PUBLIC_LIFF_ID=xxxx #optional if enable liff auth
-NEXT_PUBLIC_OPENAI_OPTION_MAX_TOKENS=1024 #optional
-NEXT_PUBLIC_OPENAI_MAX_MESSAGES=8 #optional
-```
-
-2. run the development server:
+Create `.env.local`:
 
 ```bash
-$ npm install
-$ npm run dev
-```
+# For OpenRouter, use https://openrouter.ai/api/v1
+OPENAI_API_KEY=your-provider-key
+OPENAI_BASE_URL=https://openrouter.ai/api/v1
+OPENAI_MODEL=openai/gpt-4.1-mini
+# Comma-separated choices shown in the model selector. Include OPENAI_MODEL.
+OPENAI_MODELS=openai/gpt-4.1-mini,anthropic/claude-sonnet-4
+# Comma-separated subset of OPENAI_MODELS that support vision requests.
+OPENAI_VISION_MODELS=openai/gpt-4.1-mini
+# Enables the Generate image mode. This is an independent server-side allowlist.
+OPENAI_IMAGE_MODELS=openai/gpt-image-1
+# Optional dedicated image-generation key; otherwise OPENAI_API_KEY is used.
+OPENAI_IMAGE_API_KEY=
+# This is not derived from OPENAI_BASE_URL. OpenRouter's image endpoint is the default.
+OPENAI_IMAGE_GENERATIONS_URL=https://openrouter.ai/api/v1/images
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-3. Mode
-### static mode
-This will allow build into static bundles to deploy to any static server, which ask user to enter their own API key to use.
-```bash
-NEXT_PUBLIC_MODE=static
+# Optional LIFF access-token validation.
 NEXT_PUBLIC_ENABLE_AUTH=false
+NEXT_PUBLIC_LIFF_ID=
+LINE_CHANNEL_ID=
 ```
 
-> Since API calls at client side in static mode, provider Gemini is not currently supported.
+Install dependencies and start the application:
 
-### host mode
-This will allow to call api to NextJs server with your given API key in env. This won't ask user to enter API key.
 ```bash
-OPENAI_API_KEY=xxxxx
-NEXT_PUBLIC_MODE=host
+npm install
+npm run dev
 ```
 
+Open [http://localhost:3000](http://localhost:3000).
 
-## Line Auth
-If you want to auth for user from your channel, just adjust env and you're ready to go!
+## Model Providers
 
+All model requests use the OpenAI Chat Completions API. Set `OPENAI_BASE_URL` to your compatible provider endpoint and configure the permitted model IDs with `OPENAI_MODELS`. The browser can select only models in that server-side allowlist.
+
+## Image Attachments
+
+CopilotKit native attachments accept one JPEG, PNG, WebP, or HEIC image per request. Original files must be at most 4 MiB. HEIC is converted to JPEG and images are compressed client-side before sending; the resulting payload must also be at most 4 MiB. The server accepts only validated JPEG/PNG/WebP base64 image data and sends it to the configured provider as an `image_url` data URL. Requests with images require their selected model to be listed in `OPENAI_VISION_MODELS`.
+
+Image bytes are ephemeral: they are not retained in browser localStorage session history. Accompanying text and an `[Image attached]` marker are retained so titles and saved sessions remain useful.
 
 ## Image Generation
-By default, chat room only accept ChatGPT to response with chat texting, if you want to make ChatGPT to generate image for you, change the response type in Sidebar to `Image`, and change the model in Settings to "DALL·E 3" or "DALL·E 2", then input the prompt to tell ChatGPT to generate image by your description.
 
-And of course if you want to continue to chat with ChatGPT, please change the model and response type to original settings.
+When `OPENAI_IMAGE_MODELS` has at least one model, Settings offers **Generate image** mode and its model picker. It sends only the current text prompt to the server-only `OPENAI_IMAGE_GENERATIONS_URL`; attachments are unavailable in this mode. Generated image cards stay in memory for their active chat session only, and disappear on reload.
+
+## LINE Auth
+
+Set `NEXT_PUBLIC_ENABLE_AUTH=true`, `NEXT_PUBLIC_LIFF_ID`, and `LINE_CHANNEL_ID` to require a valid LIFF access token for every AG-UI request.

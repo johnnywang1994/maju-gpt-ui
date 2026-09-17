@@ -1,33 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "@copilotkit/react-core/v2/styles.css";
 
-html {
-  @apply h-full;
-}
-
+html,
 body {
-  @apply h-full m-0;
+  min-height: 100%;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  @apply m-0;
+button:not(:disabled) {
+  cursor: pointer;
 }
 
-p {
-  @apply my-2;
-}
-
-@layer components {
-  .base-text {
-    @apply text-gray-800 dark:text-white;
+@media (max-width: 639px) {
+  .copilotKitMessages .copilotKitMessage {
+    padding-top: 1rem !important;
   }
 
-  .block-border {
-    @apply border-solid border-gray-300 dark:border-gray-600;
-  }
-
-  .icon-text {
-    @apply text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white cursor-pointer;
-  }
 }

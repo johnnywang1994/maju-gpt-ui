@@ -1,4 +1,6 @@
-export const channelId = process.env.LINE_CHANNEL_ID ?? "";
+import env from "@/lib/env/server";
+
+export const channelId = env.LINE_CHANNEL_ID ?? "";
 
 export async function verifyAccessToken(accessToken: string) {
   const searchParams = new URLSearchParams({
