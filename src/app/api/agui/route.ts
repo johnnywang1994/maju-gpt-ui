@@ -2,6 +2,7 @@ import type { ChatCompletionContentPart, ChatCompletionMessageParam } from "open
 import sharp from "sharp";
 import clientEnv from "@/lib/env/client";
 import { isAllowedImageModel, isAllowedModel } from "@/lib/models";
+import { expandPromptVariables } from "@/lib/prompt-variables";
 import { getOpenAIClient } from "@/server/openai";
 import { channelId, verifyAccessToken } from "@/server/line";
 import env from "@/lib/env/server";
@@ -19,6 +20,7 @@ type ChatOptions = {
   temperature: number;
   maxTokens: number;
   systemPrompt: string;
+  enableWebSearch: boolean;
 };
 
 type ImageGeneration = {
@@ -181,6 +183,7 @@ function getChatOptions(value: unknown): ChatOptions {
     temperature: numberInRange(properties.temperature, 0.7, 0, 2),
     maxTokens: Math.floor(numberInRange(properties.maxTokens, 1024, 1, 4096)),
     systemPrompt: typeof properties.systemPrompt === "string" ? properties.systemPrompt.trim().slice(0, 4000) : "",
+    enableWebSearch: properties.enableWebSearch === true,
   };
 }
 
@@ -255,9 +258,10 @@ export async function POST(request: Request) {
     });
     return new Response(stream, { headers: { "Cache-Control": "no-store", "Content-Type": "text/event-stream; charset=utf-8", Connection: "keep-alive" } });
   }
+  const systemPrompt = options.systemPrompt ? expandPromptVariables(options.systemPrompt, env.SYSTEM_PROMPT_TIMEZONE) : "";
   let parsedMessages: { messages: ChatCompletionMessageParam[]; hasImage: boolean };
   try {
-    parsedMessages = await toChatMessages(body.messages, options.systemPrompt ? 9 : 10);
+    parsedMessages = await toChatMessages(body.messages, systemPrompt ? 9 : 10);
   } catch (error) {
     if (error instanceof InvalidImagePayloadError) return Response.json({ error: "Invalid image attachment" }, { status: 422 });
     throw error;
@@ -282,12 +286,14 @@ export async function POST(request: Request) {
         }
 
         controller.enqueue(sse({ type: "TEXT_MESSAGE_START", messageId, role: "assistant" }));
+        // @ts-ignore Allow provider-specific web search tool.
         const completion = await getOpenAIClient().chat.completions.create({
           model: selectedModel,
-          messages: options.systemPrompt ? [{ role: "system", content: options.systemPrompt }, ...messages] : messages,
+          messages: systemPrompt ? [{ role: "system", content: systemPrompt }, ...messages] : messages,
           temperature: options.temperature,
           max_tokens: options.maxTokens,
           stream: true,
+          ...(options.enableWebSearch ? { tools: [{ type: "openrouter:web_search", parameters: { engine: "native" } }], toolChoice: "auto" } : {}),
         });
 
         for await (const chunk of completion) {

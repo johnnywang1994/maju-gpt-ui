@@ -15,12 +15,13 @@ const env = createEnv({
     OPENAI_MODELS: z.string().optional(),
     OPENAI_VISION_MODELS: z.string().optional(),
     OPENAI_IMAGE_MODELS: z.string().optional(),
-    OPENAI_IMAGE_API_KEY: z.string().min(1).optional(),
+    OPENAI_IMAGE_API_KEY: z.string().optional(),
     OPENAI_IMAGE_GENERATIONS_URL: z.string().url().refine(
       (value) => value.startsWith("https://") || value.startsWith("http://"),
       "OPENAI_IMAGE_GENERATIONS_URL must use HTTP(S)",
     ).default("https://openrouter.ai/api/v1/images"),
     LINE_CHANNEL_ID: z.string().optional(),
+    SYSTEM_PROMPT_TIMEZONE: z.string().optional(),
   },
   runtimeEnv: {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
@@ -32,6 +33,7 @@ const env = createEnv({
     OPENAI_IMAGE_API_KEY: process.env.OPENAI_IMAGE_API_KEY,
     OPENAI_IMAGE_GENERATIONS_URL: process.env.OPENAI_IMAGE_GENERATIONS_URL,
     LINE_CHANNEL_ID: process.env.LINE_CHANNEL_ID,
+    SYSTEM_PROMPT_TIMEZONE: process.env.SYSTEM_PROMPT_TIMEZONE,
   },
   skipValidation: isBuild || isTest,
 });

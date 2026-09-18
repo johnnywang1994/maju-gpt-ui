@@ -1,4 +1,10 @@
+import clientEnv from "@/lib/env/client";
+
 export const CHAT_SETTINGS_KEY = "maju-chat-settings";
+
+export const DEFAULT_SYSTEM_PROMPT =
+  clientEnv.NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT?.trim() ||
+  "你是一位友善的 AI 助理，名為 Maju。請使用繁體中文回覆，保持清楚與禮貌。目前時間是 {currentTime}。";
 
 export type ChatSettings = {
   mode: "chat" | "image";
@@ -6,6 +12,7 @@ export type ChatSettings = {
   temperature: number;
   maxTokens: number;
   systemPrompt: string;
+  enableWebSearch: boolean;
 };
 
 export const defaultChatSettings: ChatSettings = {
@@ -13,7 +20,8 @@ export const defaultChatSettings: ChatSettings = {
   imageModel: "",
   temperature: 0.7,
   maxTokens: 1024,
-  systemPrompt: "",
+  systemPrompt: DEFAULT_SYSTEM_PROMPT,
+  enableWebSearch: true,
 };
 
 export function readChatSettings(): ChatSettings {
@@ -27,6 +35,7 @@ export function readChatSettings(): ChatSettings {
       temperature: typeof settings.temperature === "number" ? settings.temperature : defaultChatSettings.temperature,
       maxTokens: typeof settings.maxTokens === "number" ? settings.maxTokens : defaultChatSettings.maxTokens,
       systemPrompt: typeof settings.systemPrompt === "string" ? settings.systemPrompt : defaultChatSettings.systemPrompt,
+      enableWebSearch: typeof settings.enableWebSearch === "boolean" ? settings.enableWebSearch : defaultChatSettings.enableWebSearch,
     };
   } catch {
     return defaultChatSettings;

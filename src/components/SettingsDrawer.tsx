@@ -3,6 +3,7 @@
 import { Settings2, X } from "lucide-react";
 import type { ChatSettings } from "@/lib/chat-settings";
 import type { ModelOption } from "@/lib/models";
+import { PROMPT_VARIABLES } from "@/lib/prompt-variables";
 
 type Props = {
   model: string;
@@ -55,6 +56,16 @@ export default function SettingsDrawer({ model, modelOptions, imageModelOptions,
           <input id="max-tokens" className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" type="number" min="1" max="4096" value={settings.maxTokens} onChange={(event) => updateSetting("maxTokens", Number(event.target.value))} />
           <label className="mt-5 block text-sm font-medium text-slate-700" htmlFor="system-prompt">System Prompt</label>
           <textarea id="system-prompt" className="mt-2 min-h-28 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" maxLength={4000} value={settings.systemPrompt} onChange={(event) => updateSetting("systemPrompt", event.target.value)} placeholder="可選。設定助理的角色或回覆規則。" />
+          <p className="mt-2 text-sm text-slate-500">
+            可使用變數：
+            {PROMPT_VARIABLES.map(({ token, label }) => <code key={token} title={label} className="rounded bg-slate-100 px-1.5 py-0.5 text-xs font-semibold">{token}</code>)}
+            ，送出時會自動代入。
+          </p>
+          <label className="mt-5 flex items-center justify-between text-sm font-medium text-slate-700" htmlFor="enable-web-search">
+            <span>網路搜尋</span>
+            <input id="enable-web-search" type="checkbox" className="h-4 w-4 rounded border-slate-300 accent-blue-600" checked={settings.enableWebSearch} onChange={(event) => updateSetting("enableWebSearch", event.target.checked)} />
+          </label>
+          <p className="text-sm text-slate-500">允許模型透過網頁搜尋取得即時資訊。</p>
           </>}
         </div>
       </aside>

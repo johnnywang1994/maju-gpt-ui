@@ -21,9 +21,11 @@ export default function ChatSessionPersistence({ session, onMessagesChange }: Pr
     if (!isReady || hydratedSessionId.current === session.id) return;
 
     hydratedSessionId.current = undefined;
+    console.log("[persist] hydrate for", session.id, "stored messages:", session.messages.length, "current agent:", agent.messages.length);
     agent.setMessages(session.messages);
     queueMicrotask(() => {
       hydratedSessionId.current = session.id;
+      console.log("[persist] after hydrate agent messages:", agent.messages.length, "isRunning:", agent.isRunning);
     });
   }, [agent, isReady, session]);
 

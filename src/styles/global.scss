@@ -10,9 +10,3 @@ button:not(:disabled) {
   cursor: pointer;
 }
 
-@media (max-width: 639px) {
-  .copilotKitMessages .copilotKitMessage {
-    padding-top: 1rem !important;
-  }
-
-}
